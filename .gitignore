@@ -1,3 +1,9 @@
+# IDE
+.idea
+
+# Qt designer stuff
+*.lnk
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
