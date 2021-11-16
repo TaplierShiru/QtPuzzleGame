@@ -9,6 +9,13 @@ USERS_FAKE = [
     ['admin', 'admin']
 ]
 
+IGNORE_ID_SET = set()
+IMG_AND_ID = [
+    (path, i*100+8) for i, path in enumerate(
+        glob.glob("D:/University/Tech.prog/Labs/program/QtPuzzleGame/puzzle/tests/test_admin/test_images/*.png")
+    )
+]
+
 
 class DatabaseController:
 
@@ -20,19 +27,21 @@ class DatabaseController:
         Second element - id of image
 
         """
-        return [
-            (path, i*100+8) for i, path in enumerate(
-                glob.glob("D:/University/Tech.prog/Labs/program/QtPuzzleGame/puzzle/tests/test_admin/test_images/*.png")
-            )
-        ]
+        new_img_and_ids_list = []
+        for img_s, id_s in IMG_AND_ID:
+            if str(id_s) not in IGNORE_ID_SET:
+                new_img_and_ids_list += [[img_s, id_s]]
+        return new_img_and_ids_list
 
     @staticmethod
     def get_img(id_img: int) -> str:
-        return glob.glob("D:/University/Tech.prog/Labs/program/QtPuzzleGame/puzzle/tests/test_admin/test_images/*.png")[0]
+        for path_s, id_s in IMG_AND_ID:
+            if id_s == id_img:
+                return path_s
 
     @staticmethod
     def remove_img(id_img: int):
-        pass
+        IGNORE_ID_SET.add(str(id_img))
 
     @staticmethod
     def add_image(path: str, name: str):

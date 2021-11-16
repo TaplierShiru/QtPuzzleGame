@@ -72,43 +72,8 @@ class QGalleryWidget(QWidget, BackToMenu):
         if self.choosen_image_indx == -1:
             return
         # TODO: Send message to Database in order to delete img
-        DatabaseController.remove_img(self.pixmap_images_list[self.choosen_image_indx].id_img)
-        # Clear grid of images
-        for _ in range(len(self.pixmap_images_list)):
-            item = self.ui.image_gridLayout.takeAt(0)
-            widget = item.widget()
-            self.ui.image_gridLayout.removeItem(item)
-            if widget is not None:
-                del widget
-        # Clear pixmap what we want to delete
-        self.grid_column = 0
-        self.grid_raw = 0
-        print('size array: ', len(self.pixmap_images_list))
-        self.pixmap_images_list[self.choosen_image_indx].hide()
-        del self.pixmap_images_list[self.choosen_image_indx]
-        is_last = self.choosen_image_indx != len(self.pixmap_images_list)-1
-        #self.ui.image_gridLayout.removeWidget(self.pixmap_images_list[-1])
-        #item = self.ui.image_gridLayout.takeAt(len(self.pixmap_images_list)-1)
-        #widget = item.widget()
-        #self.ui.image_gridLayout.removeItem(item)
-        #if widget is not None:
-        #    del widget
-        # Append all other widgets
-        indx_shift = 0
-        for indx in range(len(self.pixmap_images_list)):
-            if indx == self.choosen_image_indx:
-                indx_shift = 1
-                print('was deleted indx: ', indx)
-            self.pixmap_images_list[indx].indx -= indx_shift
-            self.ui.image_gridLayout.addWidget(
-                self.pixmap_images_list[indx],
-                self.grid_raw, self.grid_column, Qt.AlignLeft
-            )
-            self.grid_column += 1
-            if self.grid_column == QGalleryWidget.MAXIMUM_COLUMN:
-                self.grid_column = 0
-                self.grid_raw += 1
-        print('Delete: ', self.choosen_image_indx)
+        print('idx delete: ', self.pixmap_images_list[self.choosen_image_indx].img_id)
+        DatabaseController.remove_img(self.pixmap_images_list[self.choosen_image_indx].img_id)
         # After deletion - we choose nothing (-1)
         self.choosen_image_indx = -1
         self.update()
@@ -117,8 +82,8 @@ class QGalleryWidget(QWidget, BackToMenu):
     def choose_image(self, indx: int):
         if self.choosen_image_indx != -1:
             self.pixmap_images_list[self.choosen_image_indx].switch_effect()
-        print('Choose: ', indx)
         self.choosen_image_indx = indx
+        print('Choose: ', indx, ' id: ', self.pixmap_images_list[self.choosen_image_indx].img_id)
 
     def preview_image(self, indx: int):
         print('preview: ', indx)
@@ -138,6 +103,7 @@ class QGalleryWidget(QWidget, BackToMenu):
         for _ in range(len(self.pixmap_images_list)):
             item = self.ui.image_gridLayout.takeAt(0)
             widget = item.widget()
+            widget.hide()
             self.ui.image_gridLayout.removeItem(item)
             if widget is not None:
                 del widget
