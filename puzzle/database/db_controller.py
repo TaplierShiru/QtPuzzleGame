@@ -2,7 +2,8 @@ import glob
 
 from typing import Tuple, List
 
-from puzzle.admin.constants import *
+from puzzle.utils import *
+
 
 # DEBUG
 USERS_FAKE = [

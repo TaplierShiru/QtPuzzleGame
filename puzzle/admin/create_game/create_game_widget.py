@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget
 
 from .create_game import Ui_Form
 from ..core import BackToMenu
-from ..constants import DIFFIC_LIST
+from puzzle.utils import DIFFIC_LIST
 from ..core.signals import SignalSenderBackToMenu
 from .choose_image import QChooseImageWidget
 from .utils import SignalSenderChooseImage

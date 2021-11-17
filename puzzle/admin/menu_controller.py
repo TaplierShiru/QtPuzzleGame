@@ -6,8 +6,8 @@ from .gallery import QGalleryWidget
 from .create_game import QCreateGameWidget
 from .setup_level import QSetupLevelWidget
 from .core.signals import SignalSenderBackToMenu, SignalSenderChangePage
-from .constants import (SIGNAL_ABOUT_CREATORS_INDX, SIGNAL_GALLERY_INDX, SIGNAL_SETUP_LEVEL_INDX,
-                        SIGNAL_MENU_INDX, SIGNAL_CREATE_GAME_INDX)
+from puzzle.utils import (SIGNAL_ABOUT_CREATORS_INDX, SIGNAL_GALLERY_INDX, SIGNAL_SETUP_LEVEL_INDX,
+                          SIGNAL_MENU_INDX, SIGNAL_CREATE_GAME_INDX)
 
 
 class MenuController(QWidget):
