@@ -102,53 +102,6 @@ class OnFieldTriangleFrame(QFrame):
                 qlabel_s.combine_pixmap()
                 counter += 1
 
-    """
-    def _update_labels(self, source_img: np.ndarray):
-        size = source_img.shape
-        step_w = int(size[1] // self._size_block_w)
-        step_h = int(size[0] // self._size_block_h)
-        for i in range(self._size_block_h):
-            for j in range(self._size_block_w):
-                qlabel_s = self._labels_list[i][j]
-                self._grid.addWidget(qlabel_s, i, j)
-                peases = (source_img[i * step_h: (i+1) * step_h,
-                                     j * step_w: (j+1) * step_w].copy()).astype(np.uint8)
-
-                peases[:OnFieldTriangleFrame.LINE_THICK, :, 1] = 255 # Top line
-                peases[:, :OnFieldTriangleFrame.LINE_THICK, 1] = 255 # Left line
-                peases[-OnFieldTriangleFrame.LINE_THICK:, :, 1] = 255 # Bottom line
-                peases[:, -OnFieldTriangleFrame.LINE_THICK:, 1] = 255 # Right line
-                pil_peases = Image.fromarray(peases.astype(np.uint8))
-                draw = ImageDraw.Draw(pil_peases)
-                draw.line(
-                    (0, 0, peases.shape[1], peases.shape[0]),
-                    fill=(0, 255, 0, 0), width=OnFieldTriangleFrame.LINE_THICK
-                )
-                peases = np.array(pil_peases)
-
-                # Cut peases on top and bot
-                polygon = [(0, 0), (step_w, step_h), (0, step_h), (0, 0)]
-                img = Image.new('L', (step_w, step_h), 0)
-                ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
-                mask = np.array(img)
-                # Top pease
-                arr_top = np.zeros((peases.shape[0], peases.shape[1], 4), dtype=np.uint8)
-                arr_top[..., :-1] = peases.copy()
-                arr_top[..., -1] += (1.0 - mask).astype(np.uint8) * 255
-                # Bot pease
-                arr_bot = np.zeros((peases.shape[0], peases.shape[1], 4), dtype=np.uint8)
-                arr_bot[..., :-1] = peases.copy()
-                arr_bot[..., -1] += mask.astype(np.uint8) * 255
-
-                image_top = ImageQt.ImageQt(Image.fromarray(arr_top))
-                image_bot = ImageQt.ImageQt(Image.fromarray(arr_bot))
-                qlabel_s.pixmap_top = QPixmap(image_top)
-                qlabel_s.pixmap_bot = QPixmap(image_bot)
-                qlabel_s.mask = mask
-                qlabel_s.w, qlabel_s.h = step_w, step_h
-                qlabel_s.combine_pixmap()
-    """
-
     def _game_status(self):
         game_status = self._check_status_game()
         if game_status:

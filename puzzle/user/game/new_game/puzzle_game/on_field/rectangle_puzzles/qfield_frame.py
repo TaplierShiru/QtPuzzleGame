@@ -85,25 +85,6 @@ class CustomOnFieldFrame(QFrame):
                 qlabel_s.setPixmap(QPixmap(qimage))
                 counter += 1
 
-    """
-    def _init_labels(self, source_img: np.ndarray):
-        size = source_img.shape
-        step_w = int(size[1] // self._size_block_w)
-        step_h = int(size[0] // self._size_block_h)
-        for i in range(self._size_block_h):
-            for j in range(self._size_block_w):
-                qlabel_s = self._labels_list[i][j]
-                self._grid.addWidget(qlabel_s, i, j)
-                peases = (source_img[i * step_h: (i+1) * step_h,
-                                     j * step_w: (j+1) * step_w].copy()).astype(np.uint8)
-                peases[:CustomOnFieldFrame.LINE_THICK, :, 1] = 255 # Top line
-                peases[:, :CustomOnFieldFrame.LINE_THICK, 1] = 255 # Left line
-                peases[-CustomOnFieldFrame.LINE_THICK:, :, 1] = 255 # Bottom line
-                peases[:, -CustomOnFieldFrame.LINE_THICK:, 1] = 255 # Right line
-
-                qimage = ImageQt.ImageQt(Image.fromarray(peases))
-                qlabel_s.setPixmap(QPixmap(qimage))
-    """
     def _game_status(self):
         game_status = self._check_status_game()
         if game_status:
