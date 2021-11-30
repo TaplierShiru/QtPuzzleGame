@@ -7,7 +7,7 @@ from PySide6.QtGui import QImage
 
 def cut_image_into_rectangles(
         source_img: np.ndarray, size_block_w: int, size_block_h: int,
-        thick_of_border_line: int = 5) -> List[QImage]:
+        thick_of_border_line: int = 3, map_to_qimage=True) -> List[QImage]:
     """
     Cut input image into rectangles
 
@@ -21,6 +21,8 @@ def cut_image_into_rectangles(
         Number of block per Height
     thick_of_border_line : int
         Width of border lines
+    map_to_qimage : bool
+        If true, peases will be mapped to QImage
 
     Return
     ------
@@ -41,9 +43,11 @@ def cut_image_into_rectangles(
             peases[:, :thick_of_border_line, 1] = 255  # Left line
             peases[-thick_of_border_line:, :, 1] = 255  # Bottom line
             peases[:, -thick_of_border_line:, 1] = 255  # Right line
-
-            qimage = ImageQt.ImageQt(Image.fromarray(peases))
-            rectangles_list.append(qimage)
+            if map_to_qimage:
+                qimage = ImageQt.ImageQt(Image.fromarray(peases))
+                rectangles_list.append(qimage)
+            else:
+                rectangles_list.append(peases)
 
     return rectangles_list
 

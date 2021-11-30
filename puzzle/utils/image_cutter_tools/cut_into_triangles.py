@@ -7,7 +7,7 @@ from PySide6.QtGui import QImage
 
 def cut_image_into_triangles(
         source_img: np.ndarray, size_block_w: int, size_block_h: int,
-        thick_of_border_line: int = 5) -> Tuple[List[QImage], List[QImage], QImage]:
+        thick_of_border_line: int = 3, map_to_qimage=True) -> Tuple[List[QImage], List[QImage], QImage]:
     """
     Cut input image into triangles
 
@@ -21,6 +21,8 @@ def cut_image_into_triangles(
         Number of block per Height
     thick_of_border_line : int
         Width of border lines
+    map_to_qimage : bool
+        If true, peases will be mapped to QImage
 
     Return
     ------
@@ -70,8 +72,12 @@ def cut_image_into_triangles(
             arr_bot[..., :-1] = peases.copy()
             arr_bot[..., -1] += mask.astype(np.uint8) * 255
 
-            image_top = ImageQt.ImageQt(Image.fromarray(arr_top))
-            image_bot = ImageQt.ImageQt(Image.fromarray(arr_bot))
+            if map_to_qimage:
+                image_top = ImageQt.ImageQt(Image.fromarray(arr_top))
+                image_bot = ImageQt.ImageQt(Image.fromarray(arr_bot))
+            else:
+                image_top = arr_top
+                image_bot = arr_bot
             triangles_top_list.append(image_top)
             triangles_bottom_list.append(image_bot)
 

@@ -7,7 +7,7 @@ import glob
 from typing import Tuple, List
 from puzzle.utils import *
 
-from puzzle.utils import FRAME_H, FRAME_W
+from puzzle.utils import FRAME_H, FRAME_W, DIFFIC_LIST
 
 
 # DEBUG
@@ -24,6 +24,12 @@ IMG_AND_ID_DICT = dict([
         glob.glob(f"{PATH_TEMP_DATA}/*.png")
     )
 ])
+
+DIFF2PARAMS = {
+    DIFFIC_LIST[0]: (NUM_FRAGMENTS[0], NUM_FRAGMENTS[0], TYPE_BUILD_PUZZLE[0], TYPE_PUZZLES[1]),
+    DIFFIC_LIST[1]: (NUM_FRAGMENTS[4], NUM_FRAGMENTS[4], TYPE_BUILD_PUZZLE[0], TYPE_PUZZLES[0]),
+    DIFFIC_LIST[2]: (NUM_FRAGMENTS[6], NUM_FRAGMENTS[6], TYPE_BUILD_PUZZLE[0], TYPE_PUZZLES[1]),
+}
 
 COUNTER_ADD = 0
 
@@ -112,4 +118,4 @@ class DatabaseController:
             type_puzzle
 
         """
-        return NUM_FRAGMENTS[0], NUM_FRAGMENTS[0], TYPE_BUILD_PUZZLE[0], TYPE_PUZZLES[0]
+        return DIFF2PARAMS[diff]
