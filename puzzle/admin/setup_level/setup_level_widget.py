@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QWidget
 
 from .setup_level import Ui_Form
-from ..core import BackToMenu
 from puzzle.utils import DIFFIC_LIST, NUM_FRAGMENTS, TYPE_PUZZLES, TYPE_BUILD_PUZZLE
 from puzzle.database import DatabaseController
-from ..core.signals import SignalSenderBackToMenu
+from puzzle.common.signals import SignalSenderBackToMenu
+from puzzle.common.back_to_menu import BackToMenu
 
 
 class QSetupLevelWidget(QWidget, BackToMenu):

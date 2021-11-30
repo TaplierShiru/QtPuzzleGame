@@ -2,11 +2,10 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget
 
 from .create_game import Ui_Form
-from ..core import BackToMenu
+from puzzle.common.back_to_menu import BackToMenu
 from puzzle.utils import DIFFIC_LIST
-from ..core.signals import SignalSenderBackToMenu
-from .choose_image import QChooseImageWidget
-from .utils import SignalSenderChooseImage
+from puzzle.common.signals import SignalSenderBackToMenu, SignalSenderChooseImage
+from puzzle.common.choose_image import QChooseImageWidget
 
 from puzzle.database import DatabaseController
 
@@ -49,7 +48,7 @@ class QCreateGameWidget(QWidget, BackToMenu):
     def clicked_shuffle_button(self, event):
         print('shuffle')
 
-    def update_source_image(self, id_img: int):
+    def update_source_image(self, id_img: str):
         print('id: ', id_img)
         path_to_img = DatabaseController.get_img(id_img)
         self.id_img = id_img

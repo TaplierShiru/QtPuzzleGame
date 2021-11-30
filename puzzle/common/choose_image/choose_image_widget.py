@@ -1,30 +1,25 @@
-import glob
-from typing import Tuple, List
+from typing import List, Tuple
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget, QLabel, QSizePolicy
 
-from .gallery import Ui_Form
-from .utils import SignalAddImage
-from .add_image_widget import QAddImageWidget
-
-from puzzle.common.back_to_menu import BackToMenu
-from puzzle.common.signals import SignalSenderBackToMenu, SignalSenderPicked, SignalSenderPreview
-from puzzle.common.custom_qlabels import QLabelPickedAndPreviewImage
+from .choose_image import Ui_Form
+from puzzle.common.signals import SignalSenderChooseImage, SignalSenderPreview
 from puzzle.common.preview_widget import QPreviewWidget
+from puzzle.common.custom_qlabels import QLabelPickedAndPreviewImage
+
 from puzzle.database import DatabaseController
+from puzzle.common.signals import SignalSenderBackToMenu, SignalSenderPicked
 
 
-class QGalleryWidget(QWidget, BackToMenu):
+class QChooseImageWidget(QWidget):
 
     MAXIMUM_COLUMN = 3
 
-    def __init__(self, signal_back_to_menu: SignalSenderBackToMenu):
+    def __init__(self, signal_choose_image: SignalSenderChooseImage):
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-        self.setup_back_to_menu_signal(signal_back_to_menu=signal_back_to_menu)
         self.ui.scrollAreaWidgetContents.setLayout(self.ui.image_gridLayout)
         # Additional params
         self.choosen_image_indx = -1
@@ -32,17 +27,14 @@ class QGalleryWidget(QWidget, BackToMenu):
         self.grid_column = 0
         self.pixmap_images_list = []
         self.ui.image_gridLayout.setSpacing(10)
-        self.setLayout(self.ui.gallery_gridLayout)
+        self.setLayout(self.ui.choose_image_gridLayout)
         # Buttons
-        self.ui.delete_pushButton.clicked.connect(self.delete_image)
-        self.ui.back_pushButton.clicked.connect(self.emit_signal_back_to_menu)
-        self.ui.add_pushButton.clicked.connect(self.add_image_button_clicked)
+        self.ui.choose_pushButton.clicked.connect(self.choose_button_clicked)
         # Signal
         self.signal_picked = SignalSenderPicked()
-        self.signal_add_image = SignalAddImage()
         self.signal_preview = SignalSenderPreview()
+        self.signal_choose_image = signal_choose_image
         self.signal_preview.preview.connect(self.preview_image)
-        self.signal_add_image.add.connect(self.update)
         self.signal_picked.signal.connect(self.choose_image)
         self.update()
 
@@ -54,7 +46,7 @@ class QGalleryWidget(QWidget, BackToMenu):
             self.grid_raw, self.grid_column, Qt.AlignLeft
         )
         self.grid_column += 1
-        if self.grid_column == QGalleryWidget.MAXIMUM_COLUMN:
+        if self.grid_column == QChooseImageWidget.MAXIMUM_COLUMN:
             self.grid_column = 0
             self.grid_raw += 1
 
@@ -64,27 +56,15 @@ class QGalleryWidget(QWidget, BackToMenu):
             signal_sender_picked=self.signal_picked, signal_preview=self.signal_preview
         )
 
-    def add_list_images(self, path_to_img_and_ids_list: List[Tuple[str, int]]):
+    def add_list_images(self, path_to_img_and_ids_list: List[Tuple[str, str]]):
         for path_s, img_id in path_to_img_and_ids_list:
             self.add_image(path_s, img_id=img_id)
-
-    def delete_image(self):
-        print(self.choosen_image_indx)
-        if self.choosen_image_indx == -1:
-            return
-        # TODO: Send message to Database in order to delete img
-        print('idx delete: ', self.pixmap_images_list[self.choosen_image_indx].img_id)
-        DatabaseController.remove_img(self.pixmap_images_list[self.choosen_image_indx].img_id)
-        # After deletion - we choose nothing (-1)
-        self.choosen_image_indx = -1
-        self.update()
-        print('-----------------')
 
     def choose_image(self, indx: int):
         if self.choosen_image_indx != -1:
             self.pixmap_images_list[self.choosen_image_indx].switch_effect()
+        print('Choose: ', indx)
         self.choosen_image_indx = indx
-        print('Choose: ', indx, ' id: ', self.pixmap_images_list[self.choosen_image_indx].img_id)
 
     def preview_image(self, indx: int):
         print('preview: ', indx)
@@ -93,10 +73,10 @@ class QGalleryWidget(QWidget, BackToMenu):
         preview_widget.show()
         self.preview_widget = preview_widget
 
-    def add_image_button_clicked(self):
-        add_image_widget = QAddImageWidget(self.signal_add_image)
-        self.add_image_widget = add_image_widget
-        self.add_image_widget.show()
+    def choose_button_clicked(self, event):
+        print(self.choosen_image_indx)
+        self.signal_choose_image.signal.emit(self.pixmap_images_list[self.choosen_image_indx].img_id)
+        self.close()
 
     def update(self) -> None:
         super().update()
@@ -104,7 +84,6 @@ class QGalleryWidget(QWidget, BackToMenu):
         for _ in range(len(self.pixmap_images_list)):
             item = self.ui.image_gridLayout.takeAt(0)
             widget = item.widget()
-            widget.hide()
             self.ui.image_gridLayout.removeItem(item)
             if widget is not None:
                 del widget

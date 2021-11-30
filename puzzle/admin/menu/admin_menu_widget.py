@@ -3,9 +3,9 @@ import sys
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget
 from .admin_menu import Ui_Form
-from ..core.signals import SignalSenderChangePage
-from puzzle.utils import (SIGNAL_ABOUT_CREATORS_INDX, SIGNAL_GALLERY_INDX, SIGNAL_SETUP_LEVEL_INDX,
-                         SIGNAL_CREATE_GAME_INDX)
+from puzzle.common.signals import SignalSenderChangePage
+from puzzle.admin.utils import (SIGNAL_ABOUT_CREATORS_INDX, SIGNAL_GALLERY_INDX, SIGNAL_SETUP_LEVEL_INDX,
+                                SIGNAL_CREATE_GAME_INDX)
 
 
 class QAdminMenuWidget(QWidget):

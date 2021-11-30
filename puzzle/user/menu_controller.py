@@ -1,14 +1,13 @@
 from PySide6.QtWidgets import QWidget, QStackedWidget, QGridLayout
 
-from .menu import QAdminMenuWidget
+from .menu import QUserMenuWidget
+from .game import QNewGameWidget, QLoadGameWidget
+from .score_table import QScoreTableWidget
 from puzzle.common.about_creators import QAboutCreatorsWidget
-from .gallery import QGalleryWidget
-from .create_game import QCreateGameWidget
-from .setup_level import QSetupLevelWidget
 
 from puzzle.common.signals import SignalSenderBackToMenu, SignalSenderChangePage
-from puzzle.admin.utils import (SIGNAL_ABOUT_CREATORS_INDX, SIGNAL_GALLERY_INDX, SIGNAL_SETUP_LEVEL_INDX,
-                                SIGNAL_MENU_INDX, SIGNAL_CREATE_GAME_INDX)
+from puzzle.user.utils import (SIGNAL_MENU_INDX, SIGNAL_NEW_GAME_INDX, SIGNAL_ABOUT_CREATORS_INDX,
+                               SIGNAL_LOAD_GAME_INDX, SIGNAL_SCORE_TABLE_INDX)
 
 
 class MenuController(QWidget):
@@ -27,17 +26,17 @@ class MenuController(QWidget):
         grid = QGridLayout()
         stacked_widget = QStackedWidget()
         # Init menu, 0
-        menu = QAdminMenuWidget(signal_change_page=self.signal_change_page)
+        menu = QUserMenuWidget(signal_change_page=self.signal_change_page)
         stacked_widget.addWidget(menu)
-        # Init gallery, 1
-        gallery = QGalleryWidget(signal_back_to_menu=self.signal_back_to_menu)
-        stacked_widget.addWidget(gallery)
-        # Init change level, 2
-        setup_level = QSetupLevelWidget(signal_back_to_menu=self.signal_back_to_menu)
-        stacked_widget.addWidget(setup_level)
-        # Init create game, 3
-        create_game = QCreateGameWidget(signal_back_to_menu=self.signal_back_to_menu)
-        stacked_widget.addWidget(create_game)
+        # Init new game, 1
+        new_game = QNewGameWidget(signal_back_to_menu=self.signal_back_to_menu)
+        stacked_widget.addWidget(new_game)
+        # Init load game, 2
+        load_game = QLoadGameWidget(signal_back_to_menu=self.signal_back_to_menu)
+        stacked_widget.addWidget(load_game)
+        # Init score table, 3
+        score_table = QScoreTableWidget(signal_back_to_menu=self.signal_back_to_menu)
+        stacked_widget.addWidget(score_table)
         # Init about system, 4
         # Init about creators, 5
         about_creators = QAboutCreatorsWidget(signal_back_to_menu=self.signal_back_to_menu)
@@ -45,9 +44,9 @@ class MenuController(QWidget):
 
         self.num_to_widget_dict = {
             str(SIGNAL_MENU_INDX)           : menu,
-            str(SIGNAL_GALLERY_INDX)        : gallery,
-            str(SIGNAL_SETUP_LEVEL_INDX)    : setup_level,
-            str(SIGNAL_CREATE_GAME_INDX)    : create_game,
+            str(SIGNAL_NEW_GAME_INDX)       : new_game,
+            str(SIGNAL_LOAD_GAME_INDX)      : load_game,
+            str(SIGNAL_SCORE_TABLE_INDX)    : score_table,
             str(SIGNAL_ABOUT_CREATORS_INDX) : about_creators,
         }
         stacked_widget.setCurrentIndex(0)
