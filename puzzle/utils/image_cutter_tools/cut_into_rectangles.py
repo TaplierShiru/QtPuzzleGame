@@ -7,7 +7,7 @@ from PySide6.QtGui import QImage
 
 def cut_image_into_rectangles(
         source_img: np.ndarray, size_block_w: int, size_block_h: int,
-        thick_of_border_line: int = 3, map_to_qimage=True) -> List[QImage]:
+        thick_of_border_line: int = 1, map_to_qimage=True) -> List[QImage]:
     """
     Cut input image into rectangles
 

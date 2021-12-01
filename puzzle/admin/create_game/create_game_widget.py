@@ -34,6 +34,7 @@ class QCreateGameWidget(QWidget, BackToMenu):
         self.ui.back_pushButton.clicked.connect(self.emit_signal_back_to_menu)
         self.ui.choose_image_pushButton.clicked.connect(self.clicked_choose_image)
         self.ui.shuffle_pushButton.clicked.connect(self.clicked_shuffle_button)
+        self.ui.save_pushButton.clicked.connect(self.clicked_save_button)
         # Signals
         self.signal_choose_img = SignalSenderChooseImage()
         self.signal_choose_img.signal.connect(self.update_source_image)
@@ -52,6 +53,12 @@ class QCreateGameWidget(QWidget, BackToMenu):
     def clicked_choose_image(self, event):
         self.choose_image_widget = QChooseImageWidget(self.signal_choose_img)
         self.choose_image_widget.show()
+
+    def clicked_save_button(self):
+        DatabaseController.add_new_game(
+            id_img=self.id_img, indx_position=self.shuffle_indx,
+            type_puzzle=self.type_puzzle, diff=self.ui.diff_comboBox.currentText()
+        )
 
     def clicked_shuffle_button(self, event):
         if self.id_img is not None:

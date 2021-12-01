@@ -13,13 +13,14 @@ class DragFrame(QLabel):
         self._right_indx = right_indx
         self._current_indx = current_indx
         self._type = type
+        self.pixmap: QPixmap = None
         self.setup(pixmap, size_scale)
 
     def setup(self, pixmap: QPixmap, size_scale):
         self._original_pixmap = pixmap.copy()
         if size_scale is not None:
             pixmap = pixmap.scaled(size_scale[0], size_scale[1])
-        self.pixmap = pixmap
+        self.pixmap: QPixmap = pixmap
 
     def dragMoveEvent(self, event: PySide6.QtGui.QDragMoveEvent) -> None:
         mimeData = QMimeData()

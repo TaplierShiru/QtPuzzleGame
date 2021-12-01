@@ -16,12 +16,15 @@ class QChooseImageWidget(QWidget):
 
     MAXIMUM_COLUMN = 3
 
-    def __init__(self, signal_choose_image: SignalSenderChooseImage):
+    def __init__(self, signal_choose_image: SignalSenderChooseImage, user_type: bool = False, **kwargs):
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.ui.scrollAreaWidgetContents.setLayout(self.ui.image_gridLayout)
         # Additional params
+        self._user_type = user_type
+        self._kwargs = kwargs
+
         self.choosen_image_indx = -1
         self.grid_raw = 0
         self.grid_column = 0
@@ -94,5 +97,12 @@ class QChooseImageWidget(QWidget):
         # DEBUG
         self.pixmap_images_list = []
         self.choosen_image_indx = -1
-        imgs_and_ids_list = DatabaseController.take_all_imgs()
+        if self._user_type:
+            available_games_img_ids = DatabaseController.get_game_imgs(self._kwargs['diff'])
+            imgs_list = []
+            for id_img in available_games_img_ids:
+                imgs_list.append(DatabaseController.get_img(id_img))
+            imgs_and_ids_list = list(zip(imgs_list, available_games_img_ids))
+        else:
+            imgs_and_ids_list = DatabaseController.take_all_imgs()
         self.add_list_images(imgs_and_ids_list)

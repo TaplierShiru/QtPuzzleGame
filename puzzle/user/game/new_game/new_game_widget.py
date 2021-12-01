@@ -33,7 +33,7 @@ class QNewGameWidget(QWidget, BackToMenu):
         self.setLayout(self.ui.new_game_gridLayout)
 
     def clicked_choose_image(self, event):
-        self.choose_image_widget = QChooseImageWidget(self.signal_choose_img)
+        self.choose_image_widget = QChooseImageWidget(self.signal_choose_img, user_type=True, diff=self.ui.level_diff_comboBox.currentText())
         self.choose_image_widget.show()
 
     def update_choosen_img(self, img_id: str):
@@ -53,12 +53,12 @@ class QNewGameWidget(QWidget, BackToMenu):
         if type_build == BUILD_AREA:
             if type_puzzle == RECTANGLE_PUZZLES:
                 self._widget_game = GameOnFieldRectangleWidget(
-                    DatabaseController.get_img(self.choosen_id),
+                    id_img=self.choosen_id, diff=diff,
                     size_block_h=int(frag_h), size_block_w=int(frag_v)
                 )
             elif type_puzzle == TRIANGLE_PUZZLES:
                 self._widget_game = GameOnFieldTriangleWidget(
-                    DatabaseController.get_img(self.choosen_id),
+                    id_img=self.choosen_id, diff=diff,
                     size_block_h=int(frag_h), size_block_w=int(frag_v)
                 )
             else:

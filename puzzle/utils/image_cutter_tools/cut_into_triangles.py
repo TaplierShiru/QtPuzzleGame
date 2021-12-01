@@ -7,7 +7,7 @@ from PySide6.QtGui import QImage
 
 def cut_image_into_triangles(
         source_img: np.ndarray, size_block_w: int, size_block_h: int,
-        thick_of_border_line: int = 3, map_to_qimage=True) -> Tuple[List[QImage], List[QImage], QImage]:
+        thick_of_border_line: int = 1, map_to_qimage=True) -> Tuple[List[QImage], List[QImage], QImage]:
     """
     Cut input image into triangles
 

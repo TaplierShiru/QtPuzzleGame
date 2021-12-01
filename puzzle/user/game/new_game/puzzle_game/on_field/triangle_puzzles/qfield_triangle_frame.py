@@ -6,6 +6,7 @@ from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtWidgets import QFrame, QGridLayout
 from skimage import io, draw
 
+from puzzle import DatabaseController
 from puzzle.utils import cut_image_into_triangles
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImage
 from .qclicked_drop_triangle_label import QClickedDropTriangleLabel
@@ -13,13 +14,25 @@ from .qclicked_drop_triangle_label import QClickedDropTriangleLabel
 
 class OnFieldTriangleFrame(QFrame):
 
-    LINE_THICK = 5
+    LINE_THICK = 2
 
     def __init__(
             self, original_image_path: str,
-            size_block_w: int, size_block_h: int):
+            size_block_w: int, size_block_h: int,
+            game_config: str = None):
         super().__init__()
         self.setAcceptDrops(True)
+
+        if game_config is None:
+            puzzles_top_position, puzzles_bottom_position = (
+                list(range(size_block_h * size_block_w)),
+                list(range(size_block_h * size_block_w))
+            )
+        else:
+            # Parse config
+            puzzles_top_position, puzzles_bottom_position = DatabaseController.parse_triangle_config(
+                game_config=game_config
+            )
 
         self._size_block_w = size_block_w
         self._size_block_h = size_block_h
@@ -43,18 +56,18 @@ class OnFieldTriangleFrame(QFrame):
             for j in range(self._size_block_w):
                 s_label = QClickedDropTriangleLabel(
                     signal_sender_send_data_image=self.signal_sender_send_data_image,
-                    indx_top=counter+1, current_indx_top=counter+1,
-                    indx_bot=counter, current_indx_bot=counter
+                    indx_top=counter, current_indx_top=puzzles_top_position[counter],
+                    indx_bot=counter, current_indx_bot=puzzles_bottom_position[counter]
                 )
                 s_label.setFixedWidth(puzzle_size_w)
                 s_label.setFixedHeight(puzzle_size_h)
                 w_label_list.append(s_label)
-                counter += 2
+                counter += 1
             labels_list.append(w_label_list)
         grid.setContentsMargins(0, 0, 0, 0)
         grid.setSpacing(0)
         self._labels_list = labels_list
-        self._update_labels(self._original_image)
+        self._update_labels(self._original_image, puzzles_top_position, puzzles_bottom_position)
         self.setLayout(grid)
 
     def _update_certain_label(self, indx_origin: int, indx_current: int, pixmap: QPixmap):
@@ -78,7 +91,7 @@ class OnFieldTriangleFrame(QFrame):
                         break
         self.update()
 
-    def _update_labels(self, source_img: np.ndarray):
+    def _update_labels(self, source_img: np.ndarray, puzzles_top_position: list, puzzles_bottom_position: list):
         size = source_img.shape
         triangles_top_list, triangles_bottom_list, mask = cut_image_into_triangles(
             source_img=source_img,
@@ -94,7 +107,10 @@ class OnFieldTriangleFrame(QFrame):
                 qlabel_s = self._labels_list[i][j]
                 self._grid.addWidget(qlabel_s, i, j)
 
-                image_top, image_bot = triangles_top_list[counter], triangles_bottom_list[counter]
+                image_top, image_bot = (
+                    triangles_top_list[puzzles_top_position[counter]],
+                    triangles_bottom_list[puzzles_bottom_position[counter]]
+                )
                 qlabel_s.pixmap_top = QPixmap(image_top)
                 qlabel_s.pixmap_bot = QPixmap(image_bot)
                 qlabel_s.mask = mask.copy()

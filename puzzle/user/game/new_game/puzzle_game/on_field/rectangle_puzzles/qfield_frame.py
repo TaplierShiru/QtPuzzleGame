@@ -9,16 +9,25 @@ from puzzle.utils import cut_image_into_rectangles
 from puzzle.user.game.new_game.puzzle_game.common.signals.signal_send_data_image import SignalSenderSendDataImage
 from .qclicked_drop_label import QClickedDropLabel
 
+from puzzle.database import DatabaseController
+
 
 class CustomOnFieldFrame(QFrame):
 
-    LINE_THICK = 5
+    LINE_THICK = 3
 
     def __init__(
             self, original_image_path: str,
-            size_block_w: int, size_block_h: int):
+            size_block_w: int, size_block_h: int,
+            game_config: str = None):
         super().__init__()
         self.setAcceptDrops(True)
+
+        if game_config is None:
+            puzzles_position = list(range(size_block_h * size_block_w))
+        else:
+            # Parse config
+            puzzles_position = DatabaseController.parse_rectangle_config(game_config=game_config)
 
         self._size_block_w = size_block_w
         self._size_block_h = size_block_h
@@ -42,7 +51,7 @@ class CustomOnFieldFrame(QFrame):
             for j in range(self._size_block_w):
                 s_label = QClickedDropLabel(
                     signal_sender_send_data_image=self.signal_sender_send_data_image,
-                    indx=counter, current_indx=counter
+                    indx=counter, current_indx=puzzles_position[counter]
                 )
                 s_label.setFixedWidth(puzzle_size_w)
                 s_label.setFixedHeight(puzzle_size_h)
@@ -54,7 +63,7 @@ class CustomOnFieldFrame(QFrame):
         grid.setHorizontalSpacing(0)
         grid.setVerticalSpacing(0)
         self._labels_list = labels_list
-        self._init_labels(self._original_image)
+        self._init_labels(self._original_image, puzzles_position)
         self.setLayout(grid)
 
     def _update_certain_label(self, indx_origin: int, indx_current: int, pixmap: QPixmap):
@@ -66,7 +75,7 @@ class CustomOnFieldFrame(QFrame):
                     break
         self.update()
 
-    def _init_labels(self, source_img: np.ndarray):
+    def _init_labels(self, source_img: np.ndarray, puzzles_position: list):
         size = source_img.shape
         peases_list = cut_image_into_rectangles(
             source_img=source_img,
@@ -81,7 +90,7 @@ class CustomOnFieldFrame(QFrame):
             for j in range(self._size_block_w):
                 qlabel_s = self._labels_list[i][j]
                 self._grid.addWidget(qlabel_s, i, j)
-                qimage = peases_list[counter]
+                qimage = peases_list[puzzles_position[counter]]
                 qlabel_s.setPixmap(QPixmap(qimage))
                 counter += 1
 
