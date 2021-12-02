@@ -6,6 +6,7 @@ from puzzle.common.back_to_menu import BackToMenu
 from puzzle.common.signals import SignalSenderBackToMenu, SignalSenderChooseImage
 from puzzle.utils import DIFFIC_LIST, TYPE_SCORE, BUILD_AREA, BUILD_LENTA, TRIANGLE_PUZZLES, RECTANGLE_PUZZLES
 from .puzzle_game.on_field import GameOnFieldRectangleWidget, GameOnFieldTriangleWidget
+from .puzzle_game.on_lenta import PuzzleGameOnLentaRectangleWidget
 
 from .new_game import Ui_Form
 
@@ -65,7 +66,10 @@ class QNewGameWidget(QWidget, BackToMenu):
                 raise ValueError(f"Unknown type of puzzle: {type_build}, while type build: {type_build}")
         elif type_build == BUILD_LENTA:
             if type_puzzle == RECTANGLE_PUZZLES:
-                pass
+                self._widget_game = PuzzleGameOnLentaRectangleWidget(
+                    id_img=self.choosen_id, diff=diff,
+                    size_block_h=int(frag_h), size_block_w=int(frag_v)
+                )
             elif type_puzzle == TRIANGLE_PUZZLES:
                 pass
             else:

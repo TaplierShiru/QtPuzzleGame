@@ -1,0 +1,3 @@
+
+from .rectangle_lenta_puzzles import PuzzleGameOnLentaRectangleWidget
+
