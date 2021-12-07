@@ -1,36 +1,15 @@
 import sys
-from PySide6.QtWidgets import QMainWindow, QApplication, QLabel, QWidget, QGridLayout
 
-from puzzle.user import MenuController
-
-
-class ExampleApp(QMainWindow):
-
-    def __init__(self):
-        super().__init__()
-
-        self.initUI()
-
-    def initUI(self):
-        self._test_widget = MenuController()
-        self.setCentralWidget(self._test_widget)
-        self.resize(400, 200)
-        self.center()
-
-        self.setWindowTitle('Center window')
-        self.show()
-
-    def center(self):
-        qr = self.frameGeometry()
-        cp = self.screen().geometry().center()
-        qr.moveCenter(cp)
-
-        self.move(qr.topLeft())
+from PySide6.QtWidgets import QApplication
+from puzzle.common.resizable_main_window import ResizableMainWindow
+from puzzle.user.user_menu_controller import UserMenuController
 
 
 def main():
     app = QApplication(sys.argv)
-    ex = ExampleApp()
+    ex = ResizableMainWindow(
+        lambda signal_change_size: UserMenuController(user_login="admin", signal_change_size=signal_change_size)
+    )
 
     sys.exit(app.exec())
 

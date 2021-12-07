@@ -1,7 +1,7 @@
 import PySide6
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QLabel
-from ..utils import FROM_SCROLL
+from puzzle.user.game.new_game.puzzle_game.common.constants import FROM_SCROLL
 
 from .qdrag_lenta_frame import DragLentaFrame
 

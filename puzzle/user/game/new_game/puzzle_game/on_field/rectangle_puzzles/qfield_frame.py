@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap
@@ -12,7 +14,7 @@ from .qclicked_drop_label import QClickedDropLabel
 from puzzle.database import DatabaseController
 
 
-class CustomOnFieldFrame(QFrame):
+class OnFieldRectangleFrame(QFrame):
 
     LINE_THICK = 3
 
@@ -80,7 +82,7 @@ class CustomOnFieldFrame(QFrame):
         peases_list = cut_image_into_rectangles(
             source_img=source_img,
             size_block_w=self._size_block_w, size_block_h=self._size_block_h,
-            thick_of_border_line=CustomOnFieldFrame.LINE_THICK
+            thick_of_border_line=OnFieldRectangleFrame.LINE_THICK
         )
         step_w = int(size[1] // self._size_block_w)
         step_h = int(size[0] // self._size_block_h)
@@ -93,6 +95,23 @@ class CustomOnFieldFrame(QFrame):
                 qimage = peases_list[puzzles_position[counter]]
                 qlabel_s.setPixmap(QPixmap(qimage))
                 counter += 1
+
+    def get_game_info(self) -> list:
+        indx_position = []
+        for i in range(self._size_block_h):
+            for j in range(self._size_block_w):
+                indx_position.append(self._labels_list[i][j].current_index)
+        return indx_position
+
+    def get_all_num_and_bad_placeses(self) -> Tuple[int, int]:
+        bad_placed = 0
+        counter = 0
+        for i in range(self._size_block_h):
+            for j in range(self._size_block_w):
+                if self._labels_list[i][j].current_index != counter:
+                    bad_placed += 1
+                counter += 1
+        return counter, bad_placed
 
     def _game_status(self):
         game_status = self._check_status_game()

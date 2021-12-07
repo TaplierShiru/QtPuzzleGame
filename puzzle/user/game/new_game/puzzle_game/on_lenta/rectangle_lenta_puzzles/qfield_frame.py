@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap
@@ -19,14 +21,14 @@ class CustomOnLentaRectangleFrame(QFrame):
             self, original_image_path: str,
             size_block_w: int, size_block_h: int,
             signal_sender_on_scroll: SignalSenderSendDataImage,
-            prestart_position: list = None):
+            game_config: str = None):
         super().__init__()
         self.setAcceptDrops(True)
 
-        if prestart_position is None:
+        if game_config is None:
             puzzles_position = [-1] * (size_block_h * size_block_w) # -1 - empty spot
         else:
-            puzzles_position = prestart_position
+            puzzles_position = DatabaseController.parse_lenta_frame_rectangle_config(game_config)
 
         self._size_block_w = size_block_w
         self._size_block_h = size_block_h
@@ -95,6 +97,23 @@ class CustomOnLentaRectangleFrame(QFrame):
                     qlabel_s.setPixmap(QPixmap(qimage))
                 self._is_empty.append(True)
                 counter += 1
+
+    def get_game_info(self) -> list:
+        indx_position = []
+        for i in range(self._size_block_h):
+            for j in range(self._size_block_w):
+                indx_position.append(self._labels_list[i][j].current_index)
+        return indx_position
+
+    def get_all_num_and_bad_placeses(self) -> Tuple[int, int]:
+        bad_placed = 0
+        counter = 0
+        for i in range(self._size_block_h):
+            for j in range(self._size_block_w):
+                if self._labels_list[i][j].current_index != counter:
+                    bad_placed += 1
+                counter += 1
+        return counter, bad_placed
 
     def _game_status(self):
         game_status = self._check_status_game()

@@ -9,6 +9,9 @@ from puzzle.common.back_to_menu import BackToMenu
 
 class QSetupLevelWidget(QWidget, BackToMenu):
 
+    SIZE_WINDOW_W = 300
+    SIZE_WINDOW_H = 350
+
     def __init__(self, signal_back_to_menu: SignalSenderBackToMenu):
         super().__init__()
         self.ui = Ui_Form()

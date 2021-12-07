@@ -1,6 +1,11 @@
 
 FRAME_H, FRAME_W = 400, 600
 
-FROM_FIELD = 'from_field'
-FROM_SCROLL = 'from_scroll'
+FROM_FIELD = 'from-field'
+FROM_SCROLL = 'from-scroll'
 
+TOP_ELEMENT = "top-element"
+BOTTOM_ELEMENT = "bottom-element"
+
+FROM_SCROLL_TOP_ELEMENT = FROM_SCROLL + "-" + TOP_ELEMENT
+FROM_SCROLL_BOTTOM_ELEMENT = FROM_SCROLL + "-" + BOTTOM_ELEMENT

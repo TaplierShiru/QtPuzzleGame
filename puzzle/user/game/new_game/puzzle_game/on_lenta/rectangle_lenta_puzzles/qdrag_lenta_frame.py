@@ -3,7 +3,7 @@ from PySide6.QtCore import QPoint, Qt, QMimeData
 from PySide6.QtGui import QDrag, QPixmap
 from PySide6.QtWidgets import QLabel
 
-from ..utils import FROM_FIELD, FROM_SCROLL
+from puzzle.user.game.new_game.puzzle_game.common.constants import FROM_SCROLL, FROM_FIELD
 
 
 class DragLentaFrame(QLabel):
@@ -25,10 +25,8 @@ class DragLentaFrame(QLabel):
 
     def dragMoveEvent(self, event: PySide6.QtGui.QDragMoveEvent) -> None:
         mimeData = QMimeData()
-        if self._type == FROM_SCROLL:
-            text = f'{FROM_SCROLL}_{self._right_indx}_{self._current_indx}'
-        elif self._type == FROM_FIELD:
-            text = f'{FROM_FIELD}_{self._right_indx}_{self._current_indx}'
+        if self._type == FROM_SCROLL or self._type == FROM_FIELD:
+            text = f'{self._type}_{self._right_indx}_{self._current_indx}'
         else:
             text = f'{self._right_indx}_{self._current_indx}'
         mimeData.setText(text)

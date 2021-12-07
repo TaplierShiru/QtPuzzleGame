@@ -30,9 +30,6 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0" colspan="4">
-     <widget class="QTableView" name="top10_tableView"/>
-    </item>
     <item row="0" column="0">
      <spacer name="horizontalSpacer">
       <property name="orientation">
@@ -68,6 +65,9 @@
        <string>Назад</string>
       </property>
      </widget>
+    </item>
+    <item row="1" column="0" colspan="4">
+     <widget class="QTableWidget" name="top10_tableWidget"/>
     </item>
    </layout>
   </widget>

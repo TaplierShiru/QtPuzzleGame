@@ -6,6 +6,9 @@ from puzzle.common.signals import SignalSenderBackToMenu
 
 class QAboutCreatorsWidget(QWidget, BackToMenu):
 
+    SIZE_WINDOW_W = 300
+    SIZE_WINDOW_H = 300
+
     def __init__(self, signal_back_to_menu: SignalSenderBackToMenu):
         super().__init__()
         self.ui = Ui_Form()

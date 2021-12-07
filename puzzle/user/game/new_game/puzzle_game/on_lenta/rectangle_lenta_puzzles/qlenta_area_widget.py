@@ -4,6 +4,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLayout
 from skimage import io
 
+from puzzle.database import DatabaseController
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImage
 from puzzle.user.game.new_game.puzzle_game.on_lenta.rectangle_lenta_puzzles.qclicked_lenta_label import \
     QClickedLentaLabel
@@ -19,15 +20,15 @@ class ScrolledRectangleFrame(QFrame):
             self, original_image_path: str,
             size_block_w: int, size_block_h: int,
             signal_sender_on_scroll: SignalSenderSendDataImage,
-            prestart_position: list = None):
+            game_config: str = None):
         super().__init__()
         self.setAcceptDrops(True)
 
-        if prestart_position is None:
+        if game_config is None:
             puzzles_position = list(range(size_block_h * size_block_w))
         else:
             # Parse config
-            puzzles_position = prestart_position
+            puzzles_position = DatabaseController.parse_lenta_scroll_rectangle_config(game_config)
 
         len_puzzle_position = len(puzzles_position)
 
@@ -110,11 +111,19 @@ class ScrolledRectangleFrame(QFrame):
             for elem in self._labels_list:
                 if elem.indx == indx_origin:
                     elem.setPixmap(pixmap)
+                    elem.indx = indx_clicked_area
                     break
             #self._labels_list[indx_origin].setPixmap(pixmap)
         #self._update_possition_w_origin(indx_origin, indx_clicked_area)
         self.update()
         print('Change view on scroll')
+
+    def get_game_info(self) -> list:
+        indx_position = []
+        for i in range(self._size_block_h):
+            for j in range(self._size_block_w):
+                indx_position.append(self._labels_list[i].indx)
+        return indx_position
 
     def update_layout(self):
         step_w = self._origin_w // self._size_block_w

@@ -1,3 +1,4 @@
 
 from .rectangle_lenta_puzzles import PuzzleGameOnLentaRectangleWidget
+from .triangle_lenta_puzzles import PuzzleGameOnLentaTriangleWidget
 

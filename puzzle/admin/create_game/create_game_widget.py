@@ -17,6 +17,8 @@ import numpy as np
 class QCreateGameWidget(QWidget, BackToMenu):
 
     SIZE_LABEL = (200, 200)
+    SIZE_WINDOW_W = 600
+    SIZE_WINDOW_H = 300
 
     def __init__(self, signal_back_to_menu: SignalSenderBackToMenu):
         super().__init__()

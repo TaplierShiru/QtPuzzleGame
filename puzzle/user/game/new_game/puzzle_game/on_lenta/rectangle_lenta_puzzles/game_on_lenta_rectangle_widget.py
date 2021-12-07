@@ -13,51 +13,91 @@ from .qfield_frame import CustomOnLentaRectangleFrame
 
 from puzzle.utils import FRAME_H, FRAME_W
 
+from puzzle.user.game.new_game.puzzle_game.common.game_base_widget import GameBaseWidget
 
-class PuzzleGameOnLentaRectangleWidget(QWidget):
 
-    def __init__(self, id_img: str, diff: str, size_block_w: int, size_block_h: int):
-        super().__init__()
-        self._id_img = id_img
-        self._diff = diff
-        self._img_path = DatabaseController.get_img(id_img)
+class PuzzleGameOnLentaRectangleWidget(GameBaseWidget):
 
+    def __init__(
+            self, user_login: str, id_img: str, diff: str,
+            size_block_w: int, size_block_h: int, score_type: str, saved_game_id: int = None):
+        super().__init__(
+            user_login=user_login, id_img=id_img, diff=diff,
+            score_type=score_type, saved_game_id=saved_game_id
+        )
+        self._size_block_w = size_block_w
+        self._size_block_h = size_block_h
+        self._game_frame: CustomOnLentaRectangleFrame = None
+        self._lenta_frame: ScrolledRectangleFrame = None
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-        game_config = DatabaseController.get_game_config(diff=diff, id_img=id_img)
+        self.build_game()
+        # Buttons
+        self.ui.save_game_pushButton.clicked.connect(self.clicked_save_game)
+        self.ui.look_full_image_pushButton.clicked.connect(super().preview_full_image)
+        self.setLayout(self.ui.game_gridLayout)
+
+    def clicked_save_game(self):
+        # Take info from game
+        indx_position_frame = self._game_frame.get_game_info()
+        indx_position_lenta = self._lenta_frame.get_game_info()
+        # Take score value
+        score_value = int(self.ui.score_value_label.text())
+        DatabaseController.save_game_lenta_rectangle(
+            user_login=self._user_login, position_frame_indx=indx_position_frame,
+            position_lenta_indx=indx_position_lenta,
+            diff=self._diff, score_value=score_value, id_img=self._id_img,
+            score_type=self._score_type
+        )
+
+    def update_score(self):
+        max_placed, bad_placed = self._game_frame.get_all_num_and_bad_placeses()
+        score_value = super().take_new_score(bad_placed=bad_placed, max_placed=max_placed)
+
+        self.ui.score_value_label.setText(str(score_value))
+
+    def current_game_state(self) -> bool:
+        """
+        Return True if game is ended otherwise - False
+
+        """
+        _, bad_placed = self._game_frame.get_all_num_and_bad_placeses()
+        return bad_placed == 0
+
+    def build_game(self):
         signal_sender_on_scroll = SignalSenderSendDataImage()
 
-        self.game_widget = CustomOnLentaRectangleFrame(
+        self._game_frame = CustomOnLentaRectangleFrame(
             self._img_path,
-            size_block_w=size_block_w, size_block_h=size_block_h,
+            size_block_w=self._size_block_w, size_block_h=self._size_block_h,
             signal_sender_on_scroll=signal_sender_on_scroll,
-            prestart_position=None
+            game_config=self._game_config
         )
-        self.game_widget.setFixedWidth(FRAME_W)
-        self.game_widget.setFixedHeight(FRAME_H)
-        self.game_widget.setObjectName(u"game_widget")
-        self.game_widget.setEnabled(True)
+        self._game_frame.setFixedWidth(FRAME_W)
+        self._game_frame.setFixedHeight(FRAME_H)
+        self._game_frame.setObjectName(u"game_widget")
+        self._game_frame.setEnabled(True)
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.game_widget.sizePolicy().hasHeightForWidth())
-        self.game_widget.setSizePolicy(sizePolicy1)
+        sizePolicy1.setHeightForWidth(self._game_frame.sizePolicy().hasHeightForWidth())
+        self._game_frame.setSizePolicy(sizePolicy1)
 
-        self.ui.game_gridLayout.addWidget(self.game_widget, 2, 0, 1, 6)
+        self.ui.game_gridLayout.addWidget(self._game_frame, 2, 0, 1, 6)
 
-        self.lenta_widget = ScrolledRectangleFrame(
+        self._lenta_frame = ScrolledRectangleFrame(
             self._img_path,
-            size_block_w=size_block_w, size_block_h=size_block_h,
+            size_block_w=self._size_block_w, size_block_h=self._size_block_h,
             signal_sender_on_scroll=signal_sender_on_scroll,
-            prestart_position=None
+            game_config=self._game_config
         )
-        self.lenta_widget.setObjectName(u"lenta_widget")
+        self._lenta_frame.setObjectName(u"lenta_widget")
         sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.lenta_widget.sizePolicy().hasHeightForWidth())
-        self.lenta_widget.setSizePolicy(sizePolicy2)
-        self.lenta_widget.setMinimumSize(QSize(0, 100))
+        sizePolicy2.setHeightForWidth(self._lenta_frame.sizePolicy().hasHeightForWidth())
+        self._lenta_frame.setSizePolicy(sizePolicy2)
+        self._lenta_frame.setMinimumSize(QSize(0, 100))
 
         scrollArea = QScrollArea()
         scrollArea.setBackgroundRole(QPalette.Dark)
@@ -65,12 +105,13 @@ class PuzzleGameOnLentaRectangleWidget(QWidget):
         scrollArea.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        scrollArea.setWidget(self.lenta_widget)
-        puzz_h = FRAME_H // size_block_h
+        scrollArea.setWidget(self._lenta_frame)
+        puzz_h = FRAME_H // self._size_block_h
         puzz_scroll_h = puzz_h + 20
         scrollArea.setFixedWidth(FRAME_W)
         scrollArea.setFixedHeight(puzz_scroll_h)
 
+        self.ui.score_value_label.setText(str(self._start_score))
         self.ui.game_gridLayout.addWidget(scrollArea, 3, 0, 1, 6)
-        self.setLayout(self.ui.game_gridLayout)
 
+        self.start_game()

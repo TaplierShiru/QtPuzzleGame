@@ -36,9 +36,6 @@
       </property>
      </spacer>
     </item>
-    <item row="2" column="0" colspan="7">
-     <widget class="QTableView" name="saved_games_tableView"/>
-    </item>
     <item row="3" column="3">
      <spacer name="horizontalSpacer_4">
       <property name="orientation">
@@ -121,6 +118,9 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
+    </item>
+    <item row="2" column="0" colspan="7">
+     <widget class="QTableWidget" name="saved_games_tableWidget"/>
     </item>
    </layout>
   </widget>

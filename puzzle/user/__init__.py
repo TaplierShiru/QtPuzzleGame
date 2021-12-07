@@ -1,3 +1,3 @@
 # Init
 
-from .menu_controller import MenuController
+from .user_menu_controller import UserMenuController

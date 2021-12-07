@@ -19,6 +19,8 @@ from puzzle.database import DatabaseController
 class QGalleryWidget(QWidget, BackToMenu):
 
     MAXIMUM_COLUMN = 3
+    SIZE_WINDOW_W = 500
+    SIZE_WINDOW_H = 400
 
     def __init__(self, signal_back_to_menu: SignalSenderBackToMenu):
         super().__init__()

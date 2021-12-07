@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QLabel
 
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImage
 
-from ..utils import FROM_SCROLL, FROM_FIELD
+from puzzle.user.game.new_game.puzzle_game.common.constants import FROM_SCROLL, FROM_FIELD
 
 from .qdrag_lenta_frame import DragLentaFrame
 
@@ -51,7 +51,7 @@ class QClickedDropLentaLabel(QLabel):
             # Element from scroll area
             # We must swap elements
             # Coords where click from scroll area was performed
-            indx_clicked_origin, _ = event.mimeData().text().replace(FROM_SCROLL+'_', '').split('_')
+            _, indx_clicked_origin, _ = event.mimeData().text().split('_')
             indx_clicked_origin  = int(indx_clicked_origin)
             pixmap_current = self.pixmap().copy()
             self.setPixmap(pixmap_sended)

@@ -10,6 +10,9 @@ from puzzle.admin.utils import (SIGNAL_ABOUT_CREATORS_INDX, SIGNAL_GALLERY_INDX,
 
 class QAdminMenuWidget(QWidget):
 
+    SIZE_WINDOW_W = 200
+    SIZE_WINDOW_H = 200
+
     def __init__(self, signal_change_page: SignalSenderChangePage):
         super().__init__()
         self.ui = Ui_Form()

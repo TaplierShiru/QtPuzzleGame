@@ -10,6 +10,9 @@ from puzzle.user.utils import (SIGNAL_MENU_INDX, SIGNAL_NEW_GAME_INDX, SIGNAL_AB
 
 class QUserMenuWidget(QWidget):
 
+    SIZE_WINDOW_W = 200
+    SIZE_WINDOW_H = 200
+
     def __init__(self, signal_change_page: SignalSenderChangePage):
         super().__init__()
         self.ui = Ui_Form()

@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageQt
@@ -8,8 +9,9 @@ from skimage import io, draw
 
 from puzzle import DatabaseController
 from puzzle.utils import cut_image_into_triangles
-from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImage
+from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImageTriangle
 from .qclicked_drop_triangle_label import QClickedDropTriangleLabel
+from puzzle.user.game.new_game.puzzle_game.common.constants import TOP_ELEMENT, BOTTOM_ELEMENT
 
 
 class OnFieldTriangleFrame(QFrame):
@@ -37,7 +39,7 @@ class OnFieldTriangleFrame(QFrame):
         self._size_block_w = size_block_w
         self._size_block_h = size_block_h
 
-        self.signal_sender_send_data_image = SignalSenderSendDataImage()
+        self.signal_sender_send_data_image = SignalSenderSendDataImageTriangle()
         self.signal_sender_send_data_image.signal.connect(self._update_certain_label)
         self._choosen_pease_frame = None
         self._original_image = io.imread(original_image_path)
@@ -70,8 +72,8 @@ class OnFieldTriangleFrame(QFrame):
         self._update_labels(self._original_image, puzzles_top_position, puzzles_bottom_position)
         self.setLayout(grid)
 
-    def _update_certain_label(self, indx_origin: int, indx_current: int, pixmap: QPixmap):
-        if indx_origin % 2 == 1:
+    def _update_certain_label(self, indx_origin: int, indx_current: int, type_puzzle: str, pixmap: QPixmap):
+        if type_puzzle == TOP_ELEMENT:
             # top
             for elem_list in self._labels_list:
                 for elem in elem_list:
@@ -80,7 +82,7 @@ class OnFieldTriangleFrame(QFrame):
                         elem.pixmap_top = pixmap
                         elem.combine_pixmap()
                         break
-        else:
+        elif type_puzzle == BOTTOM_ELEMENT:
             # bot
             for elem_list in self._labels_list:
                 for elem in elem_list:
@@ -117,6 +119,31 @@ class OnFieldTriangleFrame(QFrame):
                 qlabel_s.w, qlabel_s.h = step_w, step_h
                 qlabel_s.combine_pixmap()
                 counter += 1
+
+    def get_game_info(self) -> Tuple[list, list]:
+        position_top_indx = []
+        position_bottom_indx = []
+
+        for i in range(self._size_block_h):
+            for j in range(self._size_block_w):
+                position_top_indx.append(self._labels_list[i][j].current_indx_top)
+                position_bottom_indx.append(self._labels_list[i][j].current_indx_bot)
+
+        return position_top_indx, position_bottom_indx
+
+    def get_all_num_and_bad_placeses(self) -> Tuple[int, int]:
+        bad_placed = 0
+        counter = 0
+        for i in range(self._size_block_h):
+            for j in range(self._size_block_w):
+                if self._labels_list[i][j].current_indx_top != counter:
+                    bad_placed += 1
+
+                if self._labels_list[i][j].current_indx_bot != counter:
+                    bad_placed += 1
+
+                counter += 2
+        return counter, bad_placed
 
     def _game_status(self):
         game_status = self._check_status_game()

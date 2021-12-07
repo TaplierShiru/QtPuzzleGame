@@ -6,6 +6,9 @@ from ...database import DatabaseController
 
 class QAuthWidget(QWidget):
 
+    SIZE_WINDOW_W = 400
+    SIZE_WINDOW_H = 400
+
     def __init__(self, signal_reg: SignalSenderReg):
         super().__init__()
         self.ui = Ui_authWidget()

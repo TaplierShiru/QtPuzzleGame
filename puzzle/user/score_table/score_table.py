@@ -29,11 +29,6 @@ class Ui_Form(object):
 
         self.gridLayout.addWidget(self.count_to_label, 0, 1, 1, 1)
 
-        self.top10_tableView = QTableView(self.gridLayoutWidget)
-        self.top10_tableView.setObjectName(u"top10_tableView")
-
-        self.gridLayout.addWidget(self.top10_tableView, 1, 0, 1, 4)
-
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.gridLayout.addItem(self.horizontalSpacer, 0, 0, 1, 1)
@@ -51,6 +46,11 @@ class Ui_Form(object):
         self.back_to_menu_pushButton.setObjectName(u"back_to_menu_pushButton")
 
         self.gridLayout.addWidget(self.back_to_menu_pushButton, 2, 0, 1, 1)
+
+        self.top10_tableWidget = QTableWidget(self.gridLayoutWidget)
+        self.top10_tableWidget.setObjectName(u"top10_tableWidget")
+
+        self.gridLayout.addWidget(self.top10_tableWidget, 1, 0, 1, 4)
 
 
         self.retranslateUi(Form)

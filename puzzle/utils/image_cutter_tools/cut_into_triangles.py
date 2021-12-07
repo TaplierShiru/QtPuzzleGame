@@ -67,14 +67,16 @@ def cut_image_into_triangles(
             arr_top = np.zeros((peases.shape[0], peases.shape[1], 4), dtype=np.uint8)
             arr_top[..., :-1] = peases.copy()
             arr_top[..., -1] += (1.0 - mask).astype(np.uint8) * 255
+            arr_top *= np.expand_dims((1.0 - mask).astype(np.uint8), axis=-1)
             # Bot pease
             arr_bot = np.zeros((peases.shape[0], peases.shape[1], 4), dtype=np.uint8)
             arr_bot[..., :-1] = peases.copy()
             arr_bot[..., -1] += mask.astype(np.uint8) * 255
+            arr_bot *= np.expand_dims(mask.astype(np.uint8), axis=-1)
 
             if map_to_qimage:
-                image_top = ImageQt.ImageQt(Image.fromarray(arr_top))
-                image_bot = ImageQt.ImageQt(Image.fromarray(arr_bot))
+                image_top = QImage(ImageQt.ImageQt(Image.fromarray(arr_top)))
+                image_bot = QImage(ImageQt.ImageQt(Image.fromarray(arr_bot)))
             else:
                 image_top = arr_top
                 image_bot = arr_bot

@@ -1,0 +1,2 @@
+
+from .game_on_lenta_triangle_widget import PuzzleGameOnLentaTriangleWidget

@@ -28,11 +28,6 @@ class Ui_Form(object):
 
         self.gridLayout.addItem(self.horizontalSpacer_3, 3, 2, 1, 1)
 
-        self.saved_games_tableView = QTableView(self.gridLayoutWidget)
-        self.saved_games_tableView.setObjectName(u"saved_games_tableView")
-
-        self.gridLayout.addWidget(self.saved_games_tableView, 2, 0, 1, 7)
-
         self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.gridLayout.addItem(self.horizontalSpacer_4, 3, 3, 1, 1)
@@ -69,6 +64,11 @@ class Ui_Form(object):
         self.saved_games_label.setAlignment(Qt.AlignCenter)
 
         self.gridLayout.addWidget(self.saved_games_label, 0, 2, 1, 2)
+
+        self.saved_games_tableWidget = QTableWidget(self.gridLayoutWidget)
+        self.saved_games_tableWidget.setObjectName(u"saved_games_tableWidget")
+
+        self.gridLayout.addWidget(self.saved_games_tableWidget, 2, 0, 1, 7)
 
 
         self.retranslateUi(Form)

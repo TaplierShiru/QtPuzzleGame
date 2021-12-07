@@ -1,3 +1,3 @@
 
-from .menu_controller import MenuController
+from .administrator_menu_controller import AdministratorMenuController
 
