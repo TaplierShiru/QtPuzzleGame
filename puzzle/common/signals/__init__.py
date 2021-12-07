@@ -1,0 +1,6 @@
+
+from .signal_back_to_menu import SignalSenderBackToMenu
+from .signal_change_page import SignalSenderChangePage
+from .signal_picked import SignalSenderPicked
+from .signal_choose_image import SignalSenderChooseImage
+from .signal_preview import SignalSenderPreview

@@ -6,18 +6,21 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget, QLabel, QSizePolicy
 
 from .gallery import Ui_Form
-from ..core import BackToMenu, QPreviewWidget
-from .qlabel_picked_and_preview_image import QLabelPickedAndPreviewImage
-from .utils import SignalAddImage, SignalGalleryPreview
+from .utils import SignalAddImage
 from .add_image_widget import QAddImageWidget
 
+from puzzle.common.back_to_menu import BackToMenu
+from puzzle.common.signals import SignalSenderBackToMenu, SignalSenderPicked, SignalSenderPreview
+from puzzle.common.custom_qlabels import QLabelPickedAndPreviewImage
+from puzzle.common.preview_widget import QPreviewWidget
 from puzzle.database import DatabaseController
-from ..core.signals import SignalSenderBackToMenu, SignalSenderPicked
 
 
 class QGalleryWidget(QWidget, BackToMenu):
 
     MAXIMUM_COLUMN = 3
+    SIZE_WINDOW_W = 500
+    SIZE_WINDOW_H = 400
 
     def __init__(self, signal_back_to_menu: SignalSenderBackToMenu):
         super().__init__()
@@ -39,7 +42,7 @@ class QGalleryWidget(QWidget, BackToMenu):
         # Signal
         self.signal_picked = SignalSenderPicked()
         self.signal_add_image = SignalAddImage()
-        self.signal_preview = SignalGalleryPreview()
+        self.signal_preview = SignalSenderPreview()
         self.signal_preview.preview.connect(self.preview_image)
         self.signal_add_image.add.connect(self.update)
         self.signal_picked.signal.connect(self.choose_image)

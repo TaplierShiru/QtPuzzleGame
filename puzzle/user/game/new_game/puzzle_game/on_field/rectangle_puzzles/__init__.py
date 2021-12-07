@@ -1,0 +1,2 @@
+
+from .game_on_field_rectangle_widget import GameOnFieldRectangleWidget

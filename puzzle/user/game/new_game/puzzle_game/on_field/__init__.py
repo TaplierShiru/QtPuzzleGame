@@ -1,0 +1,3 @@
+
+from .rectangle_puzzles import GameOnFieldRectangleWidget
+from .triangle_puzzles import GameOnFieldTriangleWidget

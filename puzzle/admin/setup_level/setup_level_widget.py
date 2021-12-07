@@ -1,13 +1,16 @@
 from PySide6.QtWidgets import QWidget
 
 from .setup_level import Ui_Form
-from ..core import BackToMenu
 from puzzle.utils import DIFFIC_LIST, NUM_FRAGMENTS, TYPE_PUZZLES, TYPE_BUILD_PUZZLE
 from puzzle.database import DatabaseController
-from ..core.signals import SignalSenderBackToMenu
+from puzzle.common.signals import SignalSenderBackToMenu
+from puzzle.common.back_to_menu import BackToMenu
 
 
 class QSetupLevelWidget(QWidget, BackToMenu):
+
+    SIZE_WINDOW_W = 300
+    SIZE_WINDOW_H = 350
 
     def __init__(self, signal_back_to_menu: SignalSenderBackToMenu):
         super().__init__()
