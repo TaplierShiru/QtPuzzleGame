@@ -3,9 +3,10 @@ from typing import Tuple
 import numpy as np
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QLayout
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLayout, QMessageBox
 from skimage import io
 
+from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImageTriangle
 from .qclicked_triangle_lenta_label import QClickedTriangleLentaLabel
 
@@ -26,7 +27,7 @@ class ScrolledTriangleFrame(QFrame):
             game_config: str = None):
         super().__init__()
         self.setAcceptDrops(True)
-
+        self._qmess_box: QMessageBox = None
         if game_config is None:
             puzzles_top_position, puzzles_bottom_position = (
                 list(range(size_block_h * size_block_w)),
@@ -34,6 +35,12 @@ class ScrolledTriangleFrame(QFrame):
             )
         else:
             puzzles_top_position, puzzles_bottom_position = DatabaseController.parse_lenta_scroll_triangle_config(game_config)
+
+            if puzzles_top_position is None or puzzles_bottom_position is None:
+                self._qmess_box = return_qmess_box_connect_db_error()
+                self._qmess_box.show()
+                return
+
 
         len_puzzle_position = len(puzzles_top_position) + len(puzzles_bottom_position)
 

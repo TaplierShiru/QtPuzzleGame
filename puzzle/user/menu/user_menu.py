@@ -13,12 +13,12 @@ from PySide6.QtGui import *  # type: ignore
 from PySide6.QtWidgets import *  # type: ignore
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        if not Form.objectName():
-            Form.setObjectName(u"Form")
-        Form.resize(400, 300)
-        self.verticalLayoutWidget = QWidget(Form)
+class Ui_UserMenu(object):
+    def setupUi(self, UserMenu):
+        if not UserMenu.objectName():
+            UserMenu.setObjectName(u"UserMenu")
+        UserMenu.resize(400, 300)
+        self.verticalLayoutWidget = QWidget(UserMenu)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
         self.verticalLayoutWidget.setGeometry(QRect(10, 10, 381, 281))
         self.user_menu_verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
@@ -94,7 +94,7 @@ class Ui_Form(object):
         self.user_menu_verticalLayout.addWidget(self.exit_pushButton)
 
 
-        self.retranslateUi(Form)
+        self.retranslateUi(UserMenu)
 
         self.new_game_pushButton.setDefault(False)
         self.load_game_pushButton.setDefault(False)
@@ -104,16 +104,16 @@ class Ui_Form(object):
         self.exit_pushButton.setDefault(False)
 
 
-        QMetaObject.connectSlotsByName(Form)
+        QMetaObject.connectSlotsByName(UserMenu)
     # setupUi
 
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"\u041c\u0435\u043d\u044e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f", None))
-        self.new_game_pushButton.setText(QCoreApplication.translate("Form", u"\u041d\u043e\u0432\u0430\u044f \u0438\u0433\u0440\u0430", None))
-        self.load_game_pushButton.setText(QCoreApplication.translate("Form", u"\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0438\u0433\u0440\u0443", None))
-        self.leader_board_pushButton.setText(QCoreApplication.translate("Form", u"\u0422\u0430\u0431\u043b\u0438\u0446\u0430 \u043b\u0438\u0434\u0435\u0440\u043e\u0432", None))
-        self.about_system_pushButton.setText(QCoreApplication.translate("Form", u"\u041e \u0441\u0438\u0441\u0442\u0435\u043c\u0435", None))
-        self.about_creators_pushButton.setText(QCoreApplication.translate("Form", u"\u041e \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a\u0430\u0445", None))
-        self.exit_pushButton.setText(QCoreApplication.translate("Form", u"\u0412\u044b\u0445\u043e\u0434", None))
+    def retranslateUi(self, UserMenu):
+        UserMenu.setWindowTitle(QCoreApplication.translate("UserMenu", u"\u041c\u0435\u043d\u044e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f", None))
+        self.new_game_pushButton.setText(QCoreApplication.translate("UserMenu", u"\u041d\u043e\u0432\u0430\u044f \u0438\u0433\u0440\u0430", None))
+        self.load_game_pushButton.setText(QCoreApplication.translate("UserMenu", u"\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0438\u0433\u0440\u0443", None))
+        self.leader_board_pushButton.setText(QCoreApplication.translate("UserMenu", u"\u0422\u0430\u0431\u043b\u0438\u0446\u0430 \u043b\u0438\u0434\u0435\u0440\u043e\u0432", None))
+        self.about_system_pushButton.setText(QCoreApplication.translate("UserMenu", u"\u041e \u0441\u0438\u0441\u0442\u0435\u043c\u0435", None))
+        self.about_creators_pushButton.setText(QCoreApplication.translate("UserMenu", u"\u041e \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a\u0430\u0445", None))
+        self.exit_pushButton.setText(QCoreApplication.translate("UserMenu", u"\u0412\u044b\u0445\u043e\u0434", None))
     # retranslateUi
 

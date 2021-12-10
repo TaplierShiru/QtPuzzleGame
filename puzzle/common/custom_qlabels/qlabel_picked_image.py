@@ -9,13 +9,14 @@ from ..signals import SignalSenderPicked
 class QLabelPickedImage(QLabel):
 
     def __init__(
-            self, indx: int, path_to_img: str,
+            self, indx: int, path_to_img: str, img_name: str,
             img_id: int, signal_sender_picked: SignalSenderPicked):
         super().__init__()
         self.indx = indx
         self.path_to_img = path_to_img
         self.img_id = img_id
         self.signal_sender_picked = signal_sender_picked
+        self.img_name = img_name
         pixmap = QPixmap(path_to_img)
         pixmap = pixmap.scaled(120, 120, aspectMode=Qt.IgnoreAspectRatio)
         self.setPixmap(pixmap)

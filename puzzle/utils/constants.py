@@ -20,4 +20,7 @@ TYPE_BUILD_PUZZLE = [BUILD_AREA, BUILD_LENTA]
 SCORE_TIME = "На время"
 SCORE_POINTS = "На очки"
 
+ROLE_ADMIN = 'Администратор'
+ROLE_USER = 'Пользователь'
+
 TYPE_SCORE = [SCORE_TIME, SCORE_POINTS]
