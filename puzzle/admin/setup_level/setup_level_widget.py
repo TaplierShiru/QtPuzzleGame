@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget, QMessageBox
 
-from .setup_level import Ui_Form
+from .setup_level import Ui_SetupLevel
 from puzzle.utils import DIFFIC_LIST, NUM_FRAGMENTS, TYPE_PUZZLES, TYPE_BUILD_PUZZLE
 from puzzle.database import DatabaseController
 from puzzle.common.signals import SignalSenderBackToMenu
@@ -15,8 +15,8 @@ class QSetupLevelWidget(QWidget, BackToMenu):
 
     def __init__(self, signal_back_to_menu: SignalSenderBackToMenu):
         super().__init__()
-        self._qmess_box: QMessageBox = None
-        self.ui = Ui_Form()
+        self.__qmess_box: QMessageBox = None
+        self.ui = Ui_SetupLevel()
         self.ui.setupUi(self)
         self.setup_back_to_menu_signal(signal_back_to_menu=signal_back_to_menu)
 
@@ -35,8 +35,8 @@ class QSetupLevelWidget(QWidget, BackToMenu):
     def diff_changed(self, name: str):
         frag_h, frag_v, type_build, type_puzzle = DatabaseController.get_diff_params(name)
         if frag_h is None:
-            self._qmess_box = return_qmess_box_connect_db_error()
-            self._qmess_box.show()
+            self.__qmess_box = return_qmess_box_connect_db_error()
+            self.__qmess_box.show()
             return
 
         self.ui.num_frag_h_comboBox.setCurrentIndex(NUM_FRAGMENTS.index(str(frag_h)))
@@ -57,6 +57,13 @@ class QSetupLevelWidget(QWidget, BackToMenu):
         )
 
         if not result:
-            self._qmess_box = return_qmess_box_connect_db_error()
-            self._qmess_box.show()
+            self.__qmess_box = return_qmess_box_connect_db_error()
+            self.__qmess_box.show()
             return
+
+        qmess = QMessageBox()
+        qmess.setWindowTitle("Результат")
+        qmess.setText("Настройки для уровня успешно сохранены.")
+        qmess.setIcon(QMessageBox.Icon.Information)
+        qmess.show()
+        self.__qmess_box = qmess

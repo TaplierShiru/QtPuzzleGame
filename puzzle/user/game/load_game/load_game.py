@@ -13,12 +13,12 @@ from PySide6.QtGui import *  # type: ignore
 from PySide6.QtWidgets import *  # type: ignore
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        if not Form.objectName():
-            Form.setObjectName(u"Form")
-        Form.resize(602, 317)
-        self.gridLayoutWidget = QWidget(Form)
+class Ui_LoadGame(object):
+    def setupUi(self, LoadGame):
+        if not LoadGame.objectName():
+            LoadGame.setObjectName(u"LoadGame")
+        LoadGame.resize(602, 317)
+        self.gridLayoutWidget = QWidget(LoadGame)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
         self.gridLayoutWidget.setGeometry(QRect(10, 10, 581, 301))
         self.gridLayout = QGridLayout(self.gridLayoutWidget)
@@ -71,16 +71,16 @@ class Ui_Form(object):
         self.gridLayout.addWidget(self.saved_games_tableWidget, 2, 0, 1, 7)
 
 
-        self.retranslateUi(Form)
+        self.retranslateUi(LoadGame)
 
-        QMetaObject.connectSlotsByName(Form)
+        QMetaObject.connectSlotsByName(LoadGame)
     # setupUi
 
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0438\u0433\u0440\u044b", None))
-        self.delete_game_pushButton.setText(QCoreApplication.translate("Form", u"\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0438\u0433\u0440\u0443", None))
-        self.load_game_pushButton.setText(QCoreApplication.translate("Form", u"\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0438\u0433\u0440\u0443", None))
-        self.back_to_menu_pushButton.setText(QCoreApplication.translate("Form", u"\u041d\u0430\u0437\u0430\u0434", None))
-        self.saved_games_label.setText(QCoreApplication.translate("Form", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u043d\u044b\u0435 \u0438\u0433\u0440\u044b", None))
+    def retranslateUi(self, LoadGame):
+        LoadGame.setWindowTitle(QCoreApplication.translate("LoadGame", u"\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0438\u0433\u0440\u044b", None))
+        self.delete_game_pushButton.setText(QCoreApplication.translate("LoadGame", u"\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0438\u0433\u0440\u0443", None))
+        self.load_game_pushButton.setText(QCoreApplication.translate("LoadGame", u"\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0438\u0433\u0440\u0443", None))
+        self.back_to_menu_pushButton.setText(QCoreApplication.translate("LoadGame", u"\u041d\u0430\u0437\u0430\u0434", None))
+        self.saved_games_label.setText(QCoreApplication.translate("LoadGame", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u043d\u044b\u0435 \u0438\u0433\u0440\u044b", None))
     # retranslateUi
 

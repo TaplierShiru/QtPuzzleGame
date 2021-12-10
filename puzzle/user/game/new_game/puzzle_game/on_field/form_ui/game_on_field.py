@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'game_on_field.ui'
+## GameBase generated from reading UI file 'game_on_field.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.1.3
 ##
@@ -13,17 +13,17 @@ from PySide6.QtGui import *  # type: ignore
 from PySide6.QtWidgets import *  # type: ignore
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        if not Form.objectName():
-            Form.setObjectName(u"Form")
-        Form.resize(633, 482)
+class Ui_GameBase(object):
+    def setupUi(self, GameBase):
+        if not GameBase.objectName():
+            GameBase.setObjectName(u"GameBase")
+        GameBase.resize(633, 482)
         sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
-        Form.setSizePolicy(sizePolicy)
-        self.gridLayoutWidget = QWidget(Form)
+        sizePolicy.setHeightForWidth(GameBase.sizePolicy().hasHeightForWidth())
+        GameBase.setSizePolicy(sizePolicy)
+        self.gridLayoutWidget = QWidget(GameBase)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
         self.gridLayoutWidget.setGeometry(QRect(10, 10, 611, 461))
         self.game_gridLayout = QGridLayout(self.gridLayoutWidget)
@@ -84,18 +84,18 @@ class Ui_Form(object):
         self.game_gridLayout.addWidget(self.game_widget, 2, 0, 1, 6)
 
 
-        self.retranslateUi(Form)
+        self.retranslateUi(GameBase)
 
-        QMetaObject.connectSlotsByName(Form)
+        QMetaObject.connectSlotsByName(GameBase)
     # setupUi
 
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"\u041f\u0430\u0437\u043b", None))
-        self.save_game_pushButton.setText(QCoreApplication.translate("Form", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u0438\u0433\u0440\u0443", None))
-        self.score_label.setText(QCoreApplication.translate("Form", u"Score:", None))
-        self.look_full_image_pushButton.setText(QCoreApplication.translate("Form", u"\u041f\u0440\u0435\u0434\u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440", None))
-        self.about_system_pushButton.setText(QCoreApplication.translate("Form", u"\u041e \u0441\u0438\u0441\u0442\u0435\u043c\u0435", None))
-        self.exit_pushButton.setText(QCoreApplication.translate("Form", u"\u0412\u044b\u0445\u043e\u0434", None))
-        self.score_value_label.setText(QCoreApplication.translate("Form", u"0", None))
+    def retranslateUi(self, GameBase):
+        GameBase.setWindowTitle(QCoreApplication.translate("GameBase", u"\u041f\u0430\u0437\u043b", None))
+        self.save_game_pushButton.setText(QCoreApplication.translate("GameBase", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u0438\u0433\u0440\u0443", None))
+        self.score_label.setText(QCoreApplication.translate("GameBase", u"Score:", None))
+        self.look_full_image_pushButton.setText(QCoreApplication.translate("GameBase", u"\u041f\u0440\u0435\u0434\u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440", None))
+        self.about_system_pushButton.setText(QCoreApplication.translate("GameBase", u"\u041e \u0441\u0438\u0441\u0442\u0435\u043c\u0435", None))
+        self.exit_pushButton.setText(QCoreApplication.translate("GameBase", u"\u0412\u044b\u0445\u043e\u0434", None))
+        self.score_value_label.setText(QCoreApplication.translate("GameBase", u"0", None))
     # retranslateUi
 

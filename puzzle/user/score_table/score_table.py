@@ -13,12 +13,12 @@ from PySide6.QtGui import *  # type: ignore
 from PySide6.QtWidgets import *  # type: ignore
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        if not Form.objectName():
-            Form.setObjectName(u"Form")
-        Form.resize(400, 300)
-        self.gridLayoutWidget = QWidget(Form)
+class Ui_ScoreTable(object):
+    def setupUi(self, ScoreTable):
+        if not ScoreTable.objectName():
+            ScoreTable.setObjectName(u"ScoreTable")
+        ScoreTable.resize(400, 300)
+        self.gridLayoutWidget = QWidget(ScoreTable)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
         self.gridLayoutWidget.setGeometry(QRect(10, 10, 381, 281))
         self.gridLayout = QGridLayout(self.gridLayoutWidget)
@@ -53,14 +53,14 @@ class Ui_Form(object):
         self.gridLayout.addWidget(self.top10_tableWidget, 1, 0, 1, 4)
 
 
-        self.retranslateUi(Form)
+        self.retranslateUi(ScoreTable)
 
-        QMetaObject.connectSlotsByName(Form)
+        QMetaObject.connectSlotsByName(ScoreTable)
     # setupUi
 
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"\u0422\u0430\u0431\u043b\u0438\u0446\u0430 \u043b\u0438\u0434\u0435\u0440\u043e\u0432", None))
-        self.count_to_label.setText(QCoreApplication.translate("Form", u"\u0423\u0447\u0438\u0442\u044b\u0432\u0430\u0442\u044c \u0440\u0435\u0439\u0442\u0438\u043d\u0433 \u043f\u043e:", None))
-        self.back_to_menu_pushButton.setText(QCoreApplication.translate("Form", u"\u041d\u0430\u0437\u0430\u0434", None))
+    def retranslateUi(self, ScoreTable):
+        ScoreTable.setWindowTitle(QCoreApplication.translate("ScoreTable", u"\u0422\u0430\u0431\u043b\u0438\u0446\u0430 \u043b\u0438\u0434\u0435\u0440\u043e\u0432", None))
+        self.count_to_label.setText(QCoreApplication.translate("ScoreTable", u"\u0423\u0447\u0438\u0442\u044b\u0432\u0430\u0442\u044c \u0440\u0435\u0439\u0442\u0438\u043d\u0433 \u043f\u043e:", None))
+        self.back_to_menu_pushButton.setText(QCoreApplication.translate("ScoreTable", u"\u041d\u0430\u0437\u0430\u0434", None))
     # retranslateUi
 

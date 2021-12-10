@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QFileDialog, QMessageBox
 
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
-from .add_image import Ui_Form
+from .add_image import Ui_AddImage
 from puzzle.database import DatabaseController
 from ..utils import SignalAddImage
 from puzzle.utils import check_image_content
@@ -11,16 +11,16 @@ class QAddImageWidget(QWidget):
 
     def __init__(self, signal_add_image: SignalAddImage):
         super().__init__()
-        self.ui = Ui_Form()
+        self.ui = Ui_AddImage()
         self.ui.setupUi(self)
-        self.signal_add_image = signal_add_image
+        self.__signal_add_image = signal_add_image
         self.ui.save_pushButton.clicked.connect(self.clicked_save)
         self.ui.choose_pushButton.clicked.connect(self.folder_view)
-        self._qmess_box: QMessageBox = None
+        self.__qmess_box: QMessageBox = None
 
     def folder_view(self):
         dir = QFileDialog.getOpenFileName(
-            self, "Choose image", "D:/", "Images (*.png)"
+            self, "Choose image", "", "Images (*.png)"
         )
         if dir is not None and len(dir[0]) != 0:
             self.ui.path_lineEdit.setText(dir[0])
@@ -35,23 +35,27 @@ class QAddImageWidget(QWidget):
             result = DatabaseController.add_image(path_img, name_img)
 
             if not result:
-                self._qmess_box = return_qmess_box_connect_db_error()
-                self._qmess_box.show()
+                self.__qmess_box = return_qmess_box_connect_db_error()
+                self.__qmess_box.show()
                 return
-
-            qmess_box = QMessageBox()
-            qmess_box.setText("Изображение успешно добавлено.")
-            qmess_box.setWindowTitle("Результат добавления")
-            qmess_box.setIcon(QMessageBox.Icon.Information)
-            qmess_box.show()
-            self._qmess_box = qmess_box
-
-            self.signal_add_image.add.emit()
+            self.__qmess_box = self.__generate_qmess_box(
+                "Изображение успешно добавлено.",
+                QMessageBox.Icon.Information
+            )
+            self.__signal_add_image.add.emit()
         else:
             # Bad img
-            qmess_box = QMessageBox()
-            qmess_box.setText("Изображение невозможно добавить\nНеправильный путь или изображение поврежденно.")
-            qmess_box.setWindowTitle("Результат добавления")
-            qmess_box.setIcon(QMessageBox.Icon.Critical)
-            qmess_box.show()
+            self.__qmess_box = self.__generate_qmess_box(
+                "Изображение невозможно добавить\n" +\
+                "Неправильный путь или изображение поврежденно.",
+                QMessageBox.Icon.Critical
+            )
+        self.__qmess_box.show()
+
+    def __generate_qmess_box(self, text: str, icon: QMessageBox.Icon) -> QMessageBox:
+        qmess_box = QMessageBox()
+        qmess_box.setText(text)
+        qmess_box.setWindowTitle("Результат добавления")
+        qmess_box.setIcon(icon)
+        return qmess_box
 

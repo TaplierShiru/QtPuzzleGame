@@ -1,7 +1,7 @@
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.user.game.new_game.puzzle_game.common.constants import FRAME_H, FRAME_W
 
-from .game_on_field_triangle_ui import Ui_Form
+from .game_on_field_triangle_ui import Ui_GameTriangleOnField
 from PySide6.QtWidgets import QWidget
 
 from .qfield_triangle_frame import OnFieldTriangleFrame
@@ -17,12 +17,11 @@ class GameOnFieldTriangleWidget(GameBaseWidget):
             size_block_w: int, size_block_h: int, score_type: str, saved_game_id: int = None):
         super().__init__(
             user_login=user_login, id_img=id_img, diff=diff,
-            score_type=score_type, saved_game_id=saved_game_id
+            score_type=score_type, saved_game_id=saved_game_id,
+            size_block_w=size_block_w, size_block_h=size_block_h
         )
-        self._size_block_w = size_block_w
-        self._size_block_h = size_block_h
         self._custom_frame: OnFieldTriangleFrame = None
-        self.ui = Ui_Form()
+        self.ui = Ui_GameTriangleOnField()
         self.ui.setupUi(self)
 
         self.ui.save_game_pushButton.clicked.connect(self.clicked_save_game)

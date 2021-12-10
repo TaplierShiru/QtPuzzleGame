@@ -8,7 +8,7 @@ from puzzle import DatabaseController
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImageTriangle
 
-from .game_on_lenta_triangle_ui import Ui_Form
+from .game_on_lenta_triangle_ui import Ui_GameTriangleOnLenta
 from .qlenta_area_widget import ScrolledTriangleFrame
 from .qlenta_frame import OnLentaTriangleFrame
 
@@ -24,13 +24,12 @@ class PuzzleGameOnLentaTriangleWidget(GameBaseWidget):
             size_block_w: int, size_block_h: int, score_type: str, saved_game_id: int = None):
         super().__init__(
             user_login=user_login, id_img=id_img, diff=diff,
-            score_type=score_type, saved_game_id=saved_game_id
+            score_type=score_type, saved_game_id=saved_game_id,
+            size_block_w=size_block_w, size_block_h=size_block_h
         )
-        self._size_block_w = size_block_w
-        self._size_block_h = size_block_h
         self._game_frame: OnLentaTriangleFrame = None
         self._lenta_frame: ScrolledTriangleFrame = None
-        self.ui = Ui_Form()
+        self.ui = Ui_GameTriangleOnLenta()
         self.ui.setupUi(self)
 
         self.build_game()

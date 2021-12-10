@@ -69,7 +69,7 @@ class DatabaseController:
         return image_list
 
     @staticmethod
-    def get_img(id_img: str, return_as_class: bool = False) -> Union[str, Image]:
+    def get_img(id_img: int, return_as_class: bool = False) -> Union[str, Image]:
         global session
         try:
             founded_image: Image = session.query(Image).filter_by(id=int(id_img)).first()
@@ -80,7 +80,7 @@ class DatabaseController:
             return None
 
     @staticmethod
-    def get_img_name(id_img: str) -> str:
+    def get_img_name(id_img: int) -> str:
         image_path = DatabaseController.get_img(id_img, return_as_class=True)
         if image_path is None:
             return
@@ -170,8 +170,7 @@ class DatabaseController:
             return None
 
     @staticmethod
-    def add_new_game(id_img: str, indx_position: list, diff: str) -> bool:
-        global ID_GAME_TO_PARAMS
+    def add_new_game(id_img: int, indx_position: list, diff: str) -> bool:
         # Save game in db
         config_path = f"{PATH_GAMES_DATA}/{diff}_{id_img}.sage"
         game = Game(diff=diff, id_img=id_img, config_path=config_path)

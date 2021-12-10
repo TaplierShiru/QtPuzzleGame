@@ -13,12 +13,12 @@ from PySide6.QtGui import *  # type: ignore
 from PySide6.QtWidgets import *  # type: ignore
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        if not Form.objectName():
-            Form.setObjectName(u"Form")
-        Form.resize(490, 370)
-        self.gridLayoutWidget = QWidget(Form)
+class Ui_NewGame(object):
+    def setupUi(self, NewGame):
+        if not NewGame.objectName():
+            NewGame.setObjectName(u"NewGame")
+        NewGame.resize(490, 370)
+        self.gridLayoutWidget = QWidget(NewGame)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
         self.gridLayoutWidget.setGeometry(QRect(10, 10, 471, 351))
         self.new_game_gridLayout = QGridLayout(self.gridLayoutWidget)
@@ -119,19 +119,19 @@ class Ui_Form(object):
         self.new_game_gridLayout.addWidget(self.new_game_label, 0, 0, 1, 7)
 
 
-        self.retranslateUi(Form)
+        self.retranslateUi(NewGame)
 
-        QMetaObject.connectSlotsByName(Form)
+        QMetaObject.connectSlotsByName(NewGame)
     # setupUi
 
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"\u041d\u043e\u0432\u0430\u044f \u0438\u0433\u0440\u0430", None))
-        self.choose_image_pushButton.setText(QCoreApplication.translate("Form", u"\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435", None))
-        self.back_to_menu_pushButton.setText(QCoreApplication.translate("Form", u"\u041d\u0430\u0437\u0430\u0434", None))
-        self.type_res_label.setText(QCoreApplication.translate("Form", u"\u0421\u043f\u043e\u0441\u043e\u0431 \u043f\u043e\u0434\u0441\u0447\u0435\u0442\u0430 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u043e\u0432", None))
-        self.level_diff_label.setText(QCoreApplication.translate("Form", u"\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u0441\u043b\u043e\u0436\u043d\u043e\u0441\u0442\u0438", None))
-        self.start_game_pushButton.setText(QCoreApplication.translate("Form", u"\u041d\u0430\u0447\u0430\u0442\u044c \u0438\u0433\u0440\u0443", None))
-        self.choose_image_label.setText(QCoreApplication.translate("Form", u"\u0412\u044b\u0431\u0440\u0430\u043d\u043d\u043e\u0435 \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435:", None))
-        self.new_game_label.setText(QCoreApplication.translate("Form", u"\u041d\u0430\u0447\u0430\u043b\u043e \u043d\u043e\u0432\u043e\u0439 \u0438\u0433\u0440\u044b", None))
+    def retranslateUi(self, NewGame):
+        NewGame.setWindowTitle(QCoreApplication.translate("NewGame", u"\u041d\u043e\u0432\u0430\u044f \u0438\u0433\u0440\u0430", None))
+        self.choose_image_pushButton.setText(QCoreApplication.translate("NewGame", u"\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435", None))
+        self.back_to_menu_pushButton.setText(QCoreApplication.translate("NewGame", u"\u041d\u0430\u0437\u0430\u0434", None))
+        self.type_res_label.setText(QCoreApplication.translate("NewGame", u"\u0421\u043f\u043e\u0441\u043e\u0431 \u043f\u043e\u0434\u0441\u0447\u0435\u0442\u0430 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u043e\u0432", None))
+        self.level_diff_label.setText(QCoreApplication.translate("NewGame", u"\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u0441\u043b\u043e\u0436\u043d\u043e\u0441\u0442\u0438", None))
+        self.start_game_pushButton.setText(QCoreApplication.translate("NewGame", u"\u041d\u0430\u0447\u0430\u0442\u044c \u0438\u0433\u0440\u0443", None))
+        self.choose_image_label.setText(QCoreApplication.translate("NewGame", u"\u0412\u044b\u0431\u0440\u0430\u043d\u043d\u043e\u0435 \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435:", None))
+        self.new_game_label.setText(QCoreApplication.translate("NewGame", u"\u041d\u0430\u0447\u0430\u043b\u043e \u043d\u043e\u0432\u043e\u0439 \u0438\u0433\u0440\u044b", None))
     # retranslateUi
 

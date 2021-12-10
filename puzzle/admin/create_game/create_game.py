@@ -13,12 +13,12 @@ from PySide6.QtGui import *  # type: ignore
 from PySide6.QtWidgets import *  # type: ignore
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        if not Form.objectName():
-            Form.setObjectName(u"Form")
-        Form.resize(865, 475)
-        self.gridLayoutWidget = QWidget(Form)
+class Ui_CreateGame(object):
+    def setupUi(self, CreateGame):
+        if not CreateGame.objectName():
+            CreateGame.setObjectName(u"CreateGame")
+        CreateGame.resize(865, 475)
+        self.gridLayoutWidget = QWidget(CreateGame)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
         self.gridLayoutWidget.setGeometry(QRect(10, 10, 844, 451))
         self.create_game_gridLayout = QGridLayout(self.gridLayoutWidget)
@@ -92,20 +92,20 @@ class Ui_Form(object):
         self.create_game_gridLayout.addItem(self.horizontalSpacer_3, 0, 1, 1, 1)
 
 
-        self.retranslateUi(Form)
+        self.retranslateUi(CreateGame)
 
-        QMetaObject.connectSlotsByName(Form)
+        QMetaObject.connectSlotsByName(CreateGame)
     # setupUi
 
-    def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"\u0421\u043e\u0437\u0434\u0430\u043d\u0438\u0435 \u0438\u0433\u0440\u044b", None))
-        self.save_pushButton.setText(QCoreApplication.translate("Form", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
-        self.shuffle_pushButton.setText(QCoreApplication.translate("Form", u"\u041f\u0435\u0440\u0435\u043c\u0435\u0448\u0430\u0442\u044c", None))
-        self.shuffle_image_label.setText(QCoreApplication.translate("Form", u"\u041f\u0435\u0440\u0435\u043c\u0435\u0448\u0430\u043d\u043d\u044b\u0435 \u043f\u0430\u0437\u043b\u044b", None))
-        self.back_pushButton.setText(QCoreApplication.translate("Form", u"\u041d\u0430\u0437\u0430\u0434", None))
-        self.source_image_label.setText(QCoreApplication.translate("Form", u"\u0418\u0441\u0445\u043e\u0434\u043d\u043e\u0435 \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435", None))
-        self.choose_image_pushButton.setText(QCoreApplication.translate("Form", u"\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435", None))
-        self.diff_label.setText(QCoreApplication.translate("Form", u"\u0421\u043b\u043e\u0436\u043d\u043e\u0441\u0442\u044c", None))
+    def retranslateUi(self, CreateGame):
+        CreateGame.setWindowTitle(QCoreApplication.translate("CreateGame", u"\u0421\u043e\u0437\u0434\u0430\u043d\u0438\u0435 \u0438\u0433\u0440\u044b", None))
+        self.save_pushButton.setText(QCoreApplication.translate("CreateGame", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
+        self.shuffle_pushButton.setText(QCoreApplication.translate("CreateGame", u"\u041f\u0435\u0440\u0435\u043c\u0435\u0448\u0430\u0442\u044c", None))
+        self.shuffle_image_label.setText(QCoreApplication.translate("CreateGame", u"\u041f\u0435\u0440\u0435\u043c\u0435\u0448\u0430\u043d\u043d\u044b\u0435 \u043f\u0430\u0437\u043b\u044b", None))
+        self.back_pushButton.setText(QCoreApplication.translate("CreateGame", u"\u041d\u0430\u0437\u0430\u0434", None))
+        self.source_image_label.setText(QCoreApplication.translate("CreateGame", u"\u0418\u0441\u0445\u043e\u0434\u043d\u043e\u0435 \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435", None))
+        self.choose_image_pushButton.setText(QCoreApplication.translate("CreateGame", u"\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435", None))
+        self.diff_label.setText(QCoreApplication.translate("CreateGame", u"\u0421\u043b\u043e\u0436\u043d\u043e\u0441\u0442\u044c", None))
         self.source_image_label_placeholder.setText("")
         self.shuffle_image_label_placeholder.setText("")
     # retranslateUi

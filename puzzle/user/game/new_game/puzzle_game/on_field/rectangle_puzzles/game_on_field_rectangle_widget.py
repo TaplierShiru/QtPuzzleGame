@@ -1,7 +1,7 @@
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from .qfield_frame import OnFieldRectangleFrame
 from puzzle.user.game.new_game.puzzle_game.common.constants import FRAME_H, FRAME_W
-from .game_on_field_rectangle_ui import Ui_Form
+from .game_on_field_rectangle_ui import Ui_GameRectangleOnField
 
 from puzzle.user.game.new_game.puzzle_game.common.game_base_widget import GameBaseWidget
 from puzzle.database import DatabaseController
@@ -14,12 +14,11 @@ class GameOnFieldRectangleWidget(GameBaseWidget):
             size_block_w: int, size_block_h: int, score_type: str, saved_game_id: int = None):
         super().__init__(
             user_login=user_login, id_img=id_img, diff=diff,
-            score_type=score_type, saved_game_id=saved_game_id
+            score_type=score_type, saved_game_id=saved_game_id,
+            size_block_w=size_block_w, size_block_h=size_block_h
         )
-        self._size_block_w = size_block_w
-        self._size_block_h = size_block_h
         self._game_frame: OnFieldRectangleFrame = None
-        self.ui = Ui_Form()
+        self.ui = Ui_GameRectangleOnField()
         self.ui.setupUi(self)
 
         self.build_game()
@@ -62,7 +61,7 @@ class GameOnFieldRectangleWidget(GameBaseWidget):
     def build_game(self):
         self._game_frame = OnFieldRectangleFrame(
             self._img_path, game_config=self._game_config,
-            size_block_w=self._size_block_w, size_block_h=self._size_block_h
+            size_block_w=self.__size_block_w, size_block_h=self._size_block_h
         )
         self._game_frame.setFixedWidth(FRAME_W)
         self._game_frame.setFixedHeight(FRAME_H)

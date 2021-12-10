@@ -14,18 +14,21 @@ class GameBaseWidget(QWidget):
 
     def __init__(
             self, user_login: str, id_img: str, diff: str,
+            size_block_w: int, size_block_h: int,
             score_type: str, saved_game_id: int = None):
         super().__init__()
         self._user_login = user_login
         self._id_img = id_img
         self._diff = diff
         self._score_type = score_type
+        self._size_block_w = size_block_w
+        self._size_block_h = size_block_h
         self._time_left: int = None
         self._current_score: int = None
         self._timer_score_update: QTimer = None
         self._timer_game_status: QTimer = None
         self._preview_widget: QPreviewWidget = None
-        self._qmess_box : QMessageBox = None
+        self._qmess_box: QMessageBox = None
 
         self._score_controller = ScoreCalculatorController(type_score=score_type)
         self._img_path = DatabaseController.get_img(id_img)

@@ -27,7 +27,7 @@ class QChooseImageWidget(QWidget):
         self._user_type = user_type
         self._kwargs = kwargs
 
-        self._qmess_box: QMessageBox = None
+        self.__qmess_box: QMessageBox = None
         self.choosen_image_indx = -1
         self.grid_raw = 0
         self.grid_column = 0
@@ -45,7 +45,9 @@ class QChooseImageWidget(QWidget):
         self.update()
 
     def add_image(self, path_to_img: str, img_id: int, image_name: str):
-        pixmap = self.create_qlabel_w_pixmap(path_to_img, img_id=img_id, image_name=image_name, indx=len(self.pixmap_images_list))
+        pixmap = self.create_qlabel_w_pixmap(
+            path_to_img, img_id=img_id, image_name=image_name, indx=len(self.pixmap_images_list)
+        )
         self.pixmap_images_list.append(pixmap)
         self.ui.image_gridLayout.addWidget(
             pixmap,
@@ -71,18 +73,20 @@ class QChooseImageWidget(QWidget):
     def choose_image(self, indx: int):
         if self.choosen_image_indx != -1:
             self.pixmap_images_list[self.choosen_image_indx].switch_effect()
-        print('Choose: ', indx)
         self.choosen_image_indx = indx
 
     def preview_image(self, indx: int):
-        print('preview: ', indx)
         img_path = self.pixmap_images_list[indx].path_to_img
         preview_widget = QPreviewWidget(path_to_image=img_path, image_name='test')
         preview_widget.show()
         self.preview_widget = preview_widget
 
-    def choose_button_clicked(self, event):
-        print(self.choosen_image_indx)
+    def choose_button_clicked(self):
+        if not self.__check_choosen_img(
+                "Ошибка",
+                "Ошибка выбора изображения\nИзображение не было выбрано."):
+            return
+
         self.signal_choose_image.signal.emit(self.pixmap_images_list[self.choosen_image_indx].img_id)
         self.close()
 
@@ -106,22 +110,33 @@ class QChooseImageWidget(QWidget):
             available_games_img_ids = DatabaseController.get_game_imgs(self._kwargs['diff'])
 
             if available_games_img_ids is None:
-                self._qmess_box = return_qmess_box_connect_db_error()
-                self._qmess_box.show()
+                self.__qmess_box = return_qmess_box_connect_db_error()
+                self.__qmess_box.show()
                 return
 
             imgs_list = []
             for id_img in available_games_img_ids:
                 imgs_list.append(DatabaseController.get_img(id_img, return_as_class=True))
                 if imgs_list[-1] is None:
-                    self._qmess_box = return_qmess_box_connect_db_error()
-                    self._qmess_box.show()
+                    self.__qmess_box = return_qmess_box_connect_db_error()
+                    self.__qmess_box.show()
                     return
         else:
             imgs_list = DatabaseController.take_all_imgs()
 
             if imgs_list is None:
-                self._qmess_box = return_qmess_box_connect_db_error()
-                self._qmess_box.show()
+                self.__qmess_box = return_qmess_box_connect_db_error()
+                self.__qmess_box.show()
                 return
         self.add_list_images(imgs_list)
+
+    def __check_choosen_img(self, window_title: str, text: str, icon=QMessageBox.Icon.Warning) -> bool:
+        if self.choosen_image_indx == -1:
+            qmess_box = QMessageBox()
+            qmess_box.setIcon(icon)
+            qmess_box.setText(text)
+            qmess_box.setWindowTitle(window_title)
+            qmess_box.show()
+            self.__qmess_box = qmess_box
+            return False
+        return True
