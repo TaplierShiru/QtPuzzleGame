@@ -1,5 +1,5 @@
 from PySide6.QtGui import QPixmap, Qt
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QMessageBox
 
 from .create_game import Ui_Form
 from puzzle.common.back_to_menu import BackToMenu
@@ -12,6 +12,8 @@ from puzzle.common.choose_image import QChooseImageWidget
 from puzzle.database import DatabaseController
 from PIL import Image, ImageQt
 import numpy as np
+
+from ...common.qmess_boxes import return_qmess_box_connect_db_error
 
 
 class QCreateGameWidget(QWidget, BackToMenu):
@@ -51,16 +53,22 @@ class QCreateGameWidget(QWidget, BackToMenu):
         self.path_to_img = None
         self.shuffle_indx = None
         self.type_puzzle = None
+        self._qmess_box: QMessageBox = None
 
     def clicked_choose_image(self, event):
         self.choose_image_widget = QChooseImageWidget(self.signal_choose_img)
         self.choose_image_widget.show()
 
     def clicked_save_button(self):
-        DatabaseController.add_new_game(
+        result = DatabaseController.add_new_game(
             id_img=self.id_img, indx_position=self.shuffle_indx,
-            type_puzzle=self.type_puzzle, diff=self.ui.diff_comboBox.currentText()
+            diff=self.ui.diff_comboBox.currentText()
         )
+
+        if not result:
+            self._qmess_box = return_qmess_box_connect_db_error()
+            self._qmess_box.show()
+            return
 
     def clicked_shuffle_button(self, event):
         if self.id_img is not None:
@@ -74,9 +82,15 @@ class QCreateGameWidget(QWidget, BackToMenu):
             self._shuffle_image()
             self.update()
 
-    def update_source_image(self, id_img: str):
+    def update_source_image(self, id_img: int):
         print('id: ', id_img)
         path_to_img = DatabaseController.get_img(id_img)
+
+        if path_to_img is None:
+            self._qmess_box = return_qmess_box_connect_db_error()
+            self._qmess_box.show()
+            return
+
         self.id_img = id_img
         self.path_to_img = path_to_img
         # Source
@@ -89,6 +103,12 @@ class QCreateGameWidget(QWidget, BackToMenu):
 
     def _shuffle_image(self):
         frag_h, frag_w, type_build, type_puzzle = DatabaseController.get_diff_params(self.ui.diff_comboBox.currentText())
+
+        if frag_h is None:
+            self._qmess_box = return_qmess_box_connect_db_error()
+            self._qmess_box.show()
+            return
+
         frag_h, frag_w = int(frag_h), int(frag_w)
         self.type_puzzle = type_puzzle
         source_image = np.array(Image.open(self.path_to_img))

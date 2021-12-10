@@ -5,6 +5,7 @@ from PySide6.QtGui import  QPalette
 from PySide6.QtWidgets import QWidget, QScrollArea, QAbstractScrollArea, QSizePolicy
 
 from puzzle import DatabaseController
+from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImage
 
 from .game_on_lenta_rectangle_ui import Ui_Form
@@ -43,12 +44,17 @@ class PuzzleGameOnLentaRectangleWidget(GameBaseWidget):
         indx_position_lenta = self._lenta_frame.get_game_info()
         # Take score value
         score_value = int(self.ui.score_value_label.text())
-        DatabaseController.save_game_lenta_rectangle(
+        result = DatabaseController.save_game_lenta_rectangle(
             user_login=self._user_login, position_frame_indx=indx_position_frame,
             position_lenta_indx=indx_position_lenta,
             diff=self._diff, score_value=score_value, id_img=self._id_img,
             score_type=self._score_type
         )
+
+        if not result:
+            self._qmess_box = return_qmess_box_connect_db_error()
+            self._qmess_box.show()
+            return
 
     def update_score(self):
         max_placed, bad_placed = self._game_frame.get_all_num_and_bad_placeses()

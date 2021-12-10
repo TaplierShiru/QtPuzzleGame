@@ -3,10 +3,11 @@ from typing import Tuple
 import numpy as np
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QFrame, QGridLayout
+from PySide6.QtWidgets import QFrame, QGridLayout, QMessageBox
 from skimage import io
 from PIL import ImageQt, Image
 
+from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.utils import cut_image_into_rectangles
 from puzzle.user.game.new_game.puzzle_game.common.signals.signal_send_data_image import SignalSenderSendDataImage
 from .qclicked_drop_label import QClickedDropLabel
@@ -24,12 +25,18 @@ class OnFieldRectangleFrame(QFrame):
             game_config: str = None):
         super().__init__()
         self.setAcceptDrops(True)
+        self._qmess_box: QMessageBox = None
 
         if game_config is None:
             puzzles_position = list(range(size_block_h * size_block_w))
         else:
             # Parse config
             puzzles_position = DatabaseController.parse_rectangle_config(game_config=game_config)
+
+            if puzzles_position is None:
+                self._qmess_box = return_qmess_box_connect_db_error()
+                self._qmess_box.show()
+                return
 
         self._size_block_w = size_block_w
         self._size_block_h = size_block_h

@@ -1,10 +1,11 @@
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QMessageBox
 
 from .setup_level import Ui_Form
 from puzzle.utils import DIFFIC_LIST, NUM_FRAGMENTS, TYPE_PUZZLES, TYPE_BUILD_PUZZLE
 from puzzle.database import DatabaseController
 from puzzle.common.signals import SignalSenderBackToMenu
 from puzzle.common.back_to_menu import BackToMenu
+from ...common.qmess_boxes import return_qmess_box_connect_db_error
 
 
 class QSetupLevelWidget(QWidget, BackToMenu):
@@ -14,6 +15,7 @@ class QSetupLevelWidget(QWidget, BackToMenu):
 
     def __init__(self, signal_back_to_menu: SignalSenderBackToMenu):
         super().__init__()
+        self._qmess_box: QMessageBox = None
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.setup_back_to_menu_signal(signal_back_to_menu=signal_back_to_menu)
@@ -32,6 +34,11 @@ class QSetupLevelWidget(QWidget, BackToMenu):
 
     def diff_changed(self, name: str):
         frag_h, frag_v, type_build, type_puzzle = DatabaseController.get_diff_params(name)
+        if frag_h is None:
+            self._qmess_box = return_qmess_box_connect_db_error()
+            self._qmess_box.show()
+            return
+
         self.ui.num_frag_h_comboBox.setCurrentIndex(NUM_FRAGMENTS.index(str(frag_h)))
         self.ui.num_frag_v_comboBox.setCurrentIndex(NUM_FRAGMENTS.index(str(frag_v)))
         self.ui.type_build_comboBox.setCurrentIndex(TYPE_BUILD_PUZZLE.index(type_build))
@@ -44,7 +51,12 @@ class QSetupLevelWidget(QWidget, BackToMenu):
         type_build = self.ui.type_build_comboBox.currentText()
         type_puzzle = self.ui.type_puzle_comboBox.currentText()
         print(diff, frag_h, frag_v, type_build, type_puzzle)
-        DatabaseController.update_diff(
+        result = DatabaseController.update_diff(
             diff=diff, frag_h=frag_h, frag_v=frag_v,
             type_build=type_build, type_puzzle=type_puzzle
         )
+
+        if not result:
+            self._qmess_box = return_qmess_box_connect_db_error()
+            self._qmess_box.show()
+            return

@@ -2,6 +2,7 @@ from PIL import Image, ImageQt
 from PySide6.QtGui import Qt, QImage, QPixmap
 from PySide6.QtWidgets import QWidget, QTableWidgetItem, QMessageBox, QHeaderView
 
+from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from .load_game import Ui_Form
 from puzzle.database import DatabaseController
 from puzzle.common.signals import SignalSenderBackToMenu
@@ -21,7 +22,7 @@ class QLoadGameWidget(QWidget, BackToMenu):
         self.ui.setupUi(self)
         self._user_login = user_login
         self._selected_row = -1
-        self._qmes_box = None
+        self._qmess_box: QMessageBox = None
         self._game_widget = None
         self._data_about_game = []
         self.setup_back_to_menu_signal(signal_back_to_menu=signal_back_to_menu)
@@ -55,6 +56,11 @@ class QLoadGameWidget(QWidget, BackToMenu):
         self.ui.saved_games_tableWidget.setRowCount(0)
         saved_games_info = DatabaseController.get_all_saved_games_by_user(self._user_login)
 
+        if saved_games_info is None:
+            self._qmess_box = return_qmess_box_connect_db_error()
+            self._qmess_box.show()
+            return
+
         for row_i, single_data in enumerate(saved_games_info):
             self.ui.saved_games_tableWidget.setRowCount(
                 self.ui.saved_games_tableWidget.rowCount()+1
@@ -65,6 +71,12 @@ class QLoadGameWidget(QWidget, BackToMenu):
             )
 
             img_path = DatabaseController.get_img(single_data['id_img'])
+
+            if img_path is None:
+                self._qmess_box = return_qmess_box_connect_db_error()
+                self._qmess_box.show()
+                return
+
             image = Image.open(img_path)
             image = image.resize((150, 150))
             qpixmap = QPixmap(QImage(ImageQt.ImageQt(image)))
@@ -93,9 +105,15 @@ class QLoadGameWidget(QWidget, BackToMenu):
         if self._selected_row != -1:
             self.ui.saved_games_tableWidget.removeRow(self._selected_row)
             # Send info to DataBase to remove saved game
-            DatabaseController.remove_saved_game_by_user(
+            result = DatabaseController.remove_saved_game_by_user(
                 saved_game_id=self._data_about_game[self._selected_row]['saved_game_id']
             )
+
+            if not result:
+                self._qmess_box = return_qmess_box_connect_db_error()
+                self._qmess_box.show()
+                return
+
             del self._data_about_game[self._selected_row]
         else:
             self._show_box_game_not_choosen()
@@ -112,6 +130,12 @@ class QLoadGameWidget(QWidget, BackToMenu):
                 diff=diff, score_type=score_type, user_login=user_login,
                 id_img=id_img, saved_game_id=saved_game_id
             )
+
+            if game_widget is None:
+                self._qmess_box = return_qmess_box_connect_db_error()
+                self._qmess_box.show()
+                return
+
             game_widget.show()
             self._game_widget = game_widget
         else:
@@ -123,7 +147,7 @@ class QLoadGameWidget(QWidget, BackToMenu):
         qmes_box.setText("Игра не выбрана.")
         qmes_box.setIcon(QMessageBox.Icon.Warning)
         qmes_box.show()
-        self._qmes_box = qmes_box
+        self._qmess_box = qmes_box
 
     def update(self) -> None:
         self.update_table_content()

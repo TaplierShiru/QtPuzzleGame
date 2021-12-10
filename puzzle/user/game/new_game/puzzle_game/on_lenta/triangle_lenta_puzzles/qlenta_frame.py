@@ -3,9 +3,10 @@ from typing import Tuple
 import numpy as np
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QFrame, QGridLayout
+from PySide6.QtWidgets import QFrame, QGridLayout, QMessageBox
 from skimage import io
 
+from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.database import DatabaseController
 from puzzle.utils import cut_image_into_triangles
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImageTriangle
@@ -25,6 +26,7 @@ class OnLentaTriangleFrame(QFrame):
             game_config: str = None):
         super().__init__()
         self.setAcceptDrops(True)
+        self._qmess_box: QMessageBox = None
 
         if game_config is None:
             puzzles_top_position, puzzles_bottom_position = (
@@ -33,6 +35,11 @@ class OnLentaTriangleFrame(QFrame):
             )
         else:
             puzzles_top_position, puzzles_bottom_position = DatabaseController.parse_lenta_frame_triangle_config(game_config)
+
+            if puzzles_top_position is None or puzzles_bottom_position is None:
+                self._qmess_box = return_qmess_box_connect_db_error()
+                self._qmess_box.show()
+                return
 
         self._size_block_w = size_block_w
         self._size_block_h = size_block_h

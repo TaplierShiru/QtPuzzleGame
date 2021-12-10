@@ -1,3 +1,4 @@
+from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.user.game.new_game.puzzle_game.common.constants import FRAME_H, FRAME_W
 
 from .game_on_field_triangle_ui import Ui_Form
@@ -34,12 +35,17 @@ class GameOnFieldTriangleWidget(GameBaseWidget):
         position_top_indx, position_bottom_indx = self._custom_frame.get_game_info()
         # Take score value
         score_value = int(self.ui.score_value_label.text())
-        DatabaseController.save_game_triangle(
+        result = DatabaseController.save_game_triangle(
             user_login=self._user_login, position_top_indx=position_top_indx,
             position_bottom_indx=position_bottom_indx,
             diff=self._diff, score_value=score_value, id_img=self._id_img,
             score_type=self._score_type
         )
+
+        if not result:
+            self._qmess_box = return_qmess_box_connect_db_error()
+            self._qmess_box.show()
+            return
 
     def update_score(self):
         max_placed, bad_placed = self._custom_frame.get_all_num_and_bad_placeses()

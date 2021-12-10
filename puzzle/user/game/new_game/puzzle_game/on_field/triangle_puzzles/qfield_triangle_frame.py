@@ -4,10 +4,11 @@ from typing import Tuple
 import numpy as np
 from PIL import Image, ImageDraw, ImageQt
 from PySide6.QtGui import QPixmap, QImage
-from PySide6.QtWidgets import QFrame, QGridLayout
+from PySide6.QtWidgets import QFrame, QGridLayout, QMessageBox
 from skimage import io, draw
 
 from puzzle import DatabaseController
+from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.utils import cut_image_into_triangles
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImageTriangle
 from .qclicked_drop_triangle_label import QClickedDropTriangleLabel
@@ -24,6 +25,7 @@ class OnFieldTriangleFrame(QFrame):
             game_config: str = None):
         super().__init__()
         self.setAcceptDrops(True)
+        self._qmess_box: QMessageBox = None
 
         if game_config is None:
             puzzles_top_position, puzzles_bottom_position = (
@@ -35,6 +37,12 @@ class OnFieldTriangleFrame(QFrame):
             puzzles_top_position, puzzles_bottom_position = DatabaseController.parse_triangle_config(
                 game_config=game_config
             )
+
+            if puzzles_top_position is None or puzzles_bottom_position is None:
+                self._qmess_box = return_qmess_box_connect_db_error()
+                self._qmess_box.show()
+                return
+
 
         self._size_block_w = size_block_w
         self._size_block_h = size_block_h

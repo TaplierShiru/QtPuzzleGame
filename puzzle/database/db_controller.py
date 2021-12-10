@@ -1,5 +1,6 @@
 import copy
 import os
+import traceback
 
 from skimage import io, transform
 import pathlib
@@ -7,9 +8,25 @@ import glob
 import json
 import random
 
-from typing import Tuple, List
+from typing import Tuple, List, Union
 from puzzle.utils import *
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from .tables import Base, User, Image, Game, SavedGame, Record, DifficultyParams
 
+
+engine = create_engine(f'sqlite:///database_puzzle.db', echo=True)
+
+# Создание таблицы
+Base.metadata.create_all(engine)
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# DEBUG
+#user = User("admin", "admin", ROLE_ADMIN)
+#session.add(user)
+#session.commit()
 
 NEW_LINE = '\n'
 BETWEEN_NUMS = ','
@@ -19,34 +36,15 @@ TOP_NUMS = f"top{SEP_NUMS}"
 BOTTOM_NUMS = f"bottom{SEP_NUMS}"
 
 
-# DEBUG
-USERS_FAKE = [
-    ['admin', 'admin']
-]
-
-FOLDER_PATH = pathlib.Path(__file__).parent.resolve()
+FOLDER_PATH = pathlib.Path().resolve()
+FOLDER_PATH = "."
 PATH_TEMP_DATA = f"{FOLDER_PATH}/temp"
 PATH_GAMES_DATA = f"{PATH_TEMP_DATA}/games"
 PATH_SAVED_GAMES_DATA = f'{PATH_TEMP_DATA}/saved_games'
 
-with open(f"{FOLDER_PATH}/test/saved_imgs.json") as fp:
-    ID_TO_IMG_PATH_DICT = json.load(fp)
-
-DIFF2PARAMS = {
-    DIFFIC_LIST[0]: (NUM_FRAGMENTS[0], NUM_FRAGMENTS[0], TYPE_BUILD_PUZZLE[0], TYPE_PUZZLES[0]),
-    DIFFIC_LIST[1]: (NUM_FRAGMENTS[1], NUM_FRAGMENTS[2], TYPE_BUILD_PUZZLE[1], TYPE_PUZZLES[1]),
-    DIFFIC_LIST[2]: (NUM_FRAGMENTS[6], NUM_FRAGMENTS[6], TYPE_BUILD_PUZZLE[0], TYPE_PUZZLES[1]),
-}
-
-with open(f'{FOLDER_PATH}/test/saved_games.json') as fp:
-    ID_GAME_TO_PARAMS = json.load(fp)
-
-with open(f'{FOLDER_PATH}/test/saved_user_by_games.json') as fp:
-    ID_SAVED_USER_BY_GAMES_TO_PARAMS = json.load(fp)
-
-with open(f'{FOLDER_PATH}/test/saved_records.json') as fp:
-    ID_RECORD_BY_PARAMS = json.load(fp)
-
+os.makedirs(f"{PATH_TEMP_DATA}", exist_ok=True)
+os.makedirs(f"{PATH_GAMES_DATA}", exist_ok=True)
+os.makedirs(f"{PATH_SAVED_GAMES_DATA}", exist_ok=True)
 
 
 class DatabaseController:
@@ -54,93 +52,147 @@ class DatabaseController:
     NUM_MAX_RECORDS = 10
 
     @staticmethod
-    def take_all_imgs() -> List[Tuple[str, str]]:
+    def take_all_imgs() -> List[Image]:
         """
         return list of tuples
         First element - path to img
         Second element - id of image
 
         """
-        new_img_and_ids_list = []
-        for id_s, img_s in ID_TO_IMG_PATH_DICT.items():
-            new_img_and_ids_list += [[img_s, id_s]]
-        return new_img_and_ids_list
+        global session
+        try:
+            image_list = session.query(Image).all()
+        except Exception:
+            traceback.print_exc()
+            return None
+
+        return image_list
 
     @staticmethod
-    def get_img(id_img: str) -> str:
-        return ID_TO_IMG_PATH_DICT.get(str(id_img)) # return path
+    def get_img(id_img: str, return_as_class: bool = False) -> Union[str, Image]:
+        global session
+        try:
+            founded_image: Image = session.query(Image).filter_by(id=int(id_img)).first()
+            if return_as_class:
+                return founded_image
+            return founded_image.image_path # return path
+        except Exception:
+            return None
 
     @staticmethod
     def get_img_name(id_img: str) -> str:
-        img_data = ID_TO_IMG_PATH_DICT.get(str(id_img))
-        if img_data is None:
+        image_path = DatabaseController.get_img(id_img, return_as_class=True)
+        if image_path is None:
             return
-        img_name = img_data.split('/')[-1].split('.')[0]
-        return img_name
+        return image_path.get_img_name()
 
     @staticmethod
-    def remove_img(id_img: str):
-        if ID_TO_IMG_PATH_DICT.get(str(id_img)) is not None:
-            del ID_TO_IMG_PATH_DICT[str(id_img)]
+    def remove_img(id_img: int) -> bool:
+        global session
+        try:
+            img: Image = session.query(Image).filter_by(id=int(id_img)).first()
+            os.remove(img.image_path)
+            session.delete(img)
+            session.commit()
+        except Exception:
+            traceback.print_exc()
+            return False
+
+        return True
 
     @staticmethod
-    def add_image(path: str, name: str):
-        all_ids = set(ID_TO_IMG_PATH_DICT.keys())
-        id_img = random.randint(0, 1_000_000)
-        while id_img in all_ids:
-            id_img = random.randint(0, 1_000_000)
+    def add_image(path: str, name: str) -> bool:
         img = io.imread(path)
         img_resized = transform.resize(img, (FRAME_H, FRAME_W))
-        path_new_save = os.path.join(PATH_TEMP_DATA, name + f'_id_{id_img}.png')
+        path_new_save = os.path.join(PATH_TEMP_DATA, f'{name}.png')
         io.imsave(
             path_new_save,
             img_resized
         )
-        ID_TO_IMG_PATH_DICT[str(id_img)] = path_new_save
-        # Update json
-        with open(f"{FOLDER_PATH}/test/saved_imgs.json", 'w') as fp:
-            json.dump(ID_TO_IMG_PATH_DICT, fp)
+        image = Image(image_path=path_new_save)
+        try:
+            session.add(image)
+            session.commit()
+        except Exception:
+            traceback.print_exc()
+            return False
+
+        return True
 
     @staticmethod
-    def add_user(login: str, password: str):
-        if not DatabaseController.find_user(login, password):
-            USERS_FAKE.append([login, password])
+    def add_user(login: str, password: str, role: str = ROLE_USER) -> bool:
+        """
+        Return:
+            True - if user was added into database
+            None - if was some error while connecting/add user into database
+
+        """
+        user = User(login, password, role)
+        try:
+            if DatabaseController.find_user(login, password):
+                return False
+            session.add(user)
+            session.commit()
+        except Exception:
+            traceback.print_exc()
+            return None
+
+        return True
+
+    @staticmethod
+    def get_role_user(login: str) -> str:
+        """
+        Return role of certain user with `login`
+
+        """
+        try:
+            founded_user: User = session.query(User).filter_by(login=login).first()
+            return founded_user.role
+        except Exception:
+            return None
 
     @staticmethod
     def find_user(login: str, password: str) -> bool:
-        for log, pas in USERS_FAKE:
-            if log == login and password == pas:
-                return True
+        """
+        Return:
+            True - if user exist
+            False - not found
 
-        return False
+        """
+        global session
+        try:
+            founded_user: User = session.query(User).filter_by(login=login, password=password).first()
+            if founded_user is None:
+                return False
+
+            return True
+        except Exception:
+            return None
 
     @staticmethod
-    def add_new_game(id_img: str, indx_position: list, type_puzzle: str, diff: str):
+    def add_new_game(id_img: str, indx_position: list, diff: str) -> bool:
         global ID_GAME_TO_PARAMS
-        # As bd
-        # -----
-        id_save = random.randint(0, 1_000_000)
-        all_ids_set = set(ID_GAME_TO_PARAMS.keys())
-        while id_save in all_ids_set:
-            id_save = random.randint(0, 1_000_000)
-        config_path = f"{PATH_GAMES_DATA}/{id_save}.sage"
-        game_dict = {
-            f"{id_save}": {
-                "diff": diff,
-                "type_puzzle": type_puzzle,
-                'id_img': id_img,
-                'config_path': config_path
-            }
-        }
-        ID_GAME_TO_PARAMS.update(game_dict)
-        with open(f"{FOLDER_PATH}/test/saved_games.json", 'w') as fp:
-            json.dump(ID_GAME_TO_PARAMS, fp)
-        # -----
-        _, _, type_build, _ = DatabaseController.get_diff_params(diff)
+        # Save game in db
+        config_path = f"{PATH_GAMES_DATA}/{diff}_{id_img}.sage"
+        game = Game(diff=diff, id_img=id_img, config_path=config_path)
+        try:
+            session.add(game)
+            session.commit()
+        except Exception:
+            traceback.print_exc()
+            return False
+        # ---
+        _, _, type_build, type_puzzle = DatabaseController.get_diff_params(diff)
+
+        if type_puzzle is None:
+            return False
+
         if type_puzzle == TRIANGLE_PUZZLES:
             top_indx_position, bottom_indx_position = indx_position
             if type_build == BUILD_AREA:
-                all_data = DatabaseController.create_game_triangle_config(top_indx_position, bottom_indx_position, score_value=0)
+                all_data = DatabaseController.create_game_triangle_config(
+                    top_indx_position, bottom_indx_position, score_value=0
+                )
             elif type_build == BUILD_LENTA:
                 indx_position_top_frame = [-1] * len(top_indx_position)
                 indx_position_bottom_frame = [-1] * len(bottom_indx_position)
@@ -166,6 +218,8 @@ class DatabaseController:
 
         with open(config_path, 'w+') as fp:
             fp.write(all_data)
+
+        return True
 
     @staticmethod
     def create_game_rectangle_config(indx_position: list, score_value: int = None) -> str:
@@ -215,26 +269,43 @@ class DatabaseController:
 
     @staticmethod
     def get_game_imgs(diff: str) -> list:
+        global session
+        try:
+            game_list: List[Game] = session.query(Game).all()
+        except Exception:
+            traceback.print_exc()
+            return None # Something goes wrong
+
         found_imgs_list = []
-        for elem in ID_GAME_TO_PARAMS.values():
-            if elem['diff'] == diff:
-                found_imgs_list.append(elem['id_img'])
+        for game_s in game_list:
+            if game_s.diff == diff:
+                found_imgs_list.append(game_s.id_img)
 
         return found_imgs_list
 
     @staticmethod
     def get_game_config(diff: str, id_img: str) -> str:
-        for elem in ID_GAME_TO_PARAMS.values():
-            if elem['diff'] == diff and elem['id_img'] == id_img:
-                return elem['config_path']
+        global session
+        try:
+            game_list: List[Game] = session.query(Game).all()
+        except Exception:
+            traceback.print_exc()
+            return None # Something goes wrong
+
+        for game_s in game_list:
+            if game_s.diff == diff and game_s.id_img == id_img:
+                return game_s.config_path
 
         return None
 
     @staticmethod
     def parse_rectangle_config(game_config: str) -> List[int]:
         # Read stored file
-        with open(game_config, 'r') as fp:
-            data = fp.readlines()
+        try:
+            with open(game_config, 'r') as fp:
+                data = fp.readlines()
+        except Exception:
+            return None
         if len(data) != 2: # position and score
             raise ValueError()
 
@@ -245,8 +316,11 @@ class DatabaseController:
     @staticmethod
     def parse_triangle_config(game_config: str) -> Tuple[List[int], List[int]]:
         # Read stored file
-        with open(game_config, 'r') as fp:
-            data = fp.readlines()
+        try:
+            with open(game_config, 'r') as fp:
+                data = fp.readlines()
+        except Exception:
+            return None, None
         if len(data) != 2: # position and score
             raise ValueError()
 
@@ -256,8 +330,11 @@ class DatabaseController:
     @staticmethod
     def parse_lenta_scroll_rectangle_config(game_config: str) -> List[int]:
         # Read stored file
-        with open(game_config, 'r') as fp:
-            data = fp.readlines()
+        try:
+            with open(game_config, 'r') as fp:
+                data = fp.readlines()
+        except Exception:
+            return None
         if len(data) != 3: # position frame/position lenta/score
             raise ValueError()
 
@@ -268,8 +345,11 @@ class DatabaseController:
     @staticmethod
     def parse_lenta_frame_rectangle_config(game_config: str) -> List[int]:
         # Read stored file
-        with open(game_config, 'r') as fp:
-            data = fp.readlines()
+        try:
+            with open(game_config, 'r') as fp:
+                data = fp.readlines()
+        except Exception:
+            return None
         if len(data) != 3: # position frame/position lenta/score
             raise ValueError()
 
@@ -280,8 +360,11 @@ class DatabaseController:
     @staticmethod
     def parse_lenta_scroll_triangle_config(game_config: str) -> Tuple[List[int], List[int]]:
         # Read stored file
-        with open(game_config, 'r') as fp:
-            data = fp.readlines()
+        try:
+            with open(game_config, 'r') as fp:
+                data = fp.readlines()
+        except Exception:
+            return None, None
         if len(data) != 3: # position frame/position lenta/score
             raise ValueError()
 
@@ -291,8 +374,11 @@ class DatabaseController:
     @staticmethod
     def parse_lenta_frame_triangle_config(game_config: str) -> Tuple[List[int], List[int]]:
         # Read stored file
-        with open(game_config, 'r') as fp:
-            data = fp.readlines()
+        try:
+            with open(game_config, 'r') as fp:
+                data = fp.readlines()
+        except Exception:
+            return None
         if len(data) != 3: # position frame/position lenta/score
             raise ValueError()
 
@@ -318,64 +404,67 @@ class DatabaseController:
     @staticmethod
     def parse_score_config(game_config: str) -> int:
         # Read stored file
-        with open(game_config, 'r') as fp:
-            data = fp.readlines()
+        try:
+            with open(game_config, 'r') as fp:
+                data = fp.readlines()
+        except Exception:
+            return None
         if len(data) != 3 and len(data) != 2: # position frame/position lenta/score
-            raise ValueError()
+            return None
 
         data = data[-1] # Take score info, always last dimension
         return int(data)
 
     @staticmethod
-    def save_game_rectangle(user_login: str, position_indx: list, diff: str, score_value: int, id_img: int, score_type: str):
+    def save_game_rectangle(
+            user_login: str, position_indx: list, diff: str,
+            score_value: int, id_img: int, score_type: str) -> bool:
         # Create config file and saved it
-        all_data = DatabaseController.create_game_rectangle_config(indx_position=position_indx, score_value=score_value)
-
-        id_saved_user_by_game = DatabaseController.take_unique_id(list(ID_SAVED_USER_BY_GAMES_TO_PARAMS.keys()))
-        config_path = f"{PATH_SAVED_GAMES_DATA}/{id_saved_user_by_game}.sage"
+        all_data = DatabaseController.create_game_rectangle_config(
+            indx_position=position_indx, score_value=score_value
+        )
+        config_path = f"{PATH_SAVED_GAMES_DATA}/{user_login}_{diff}_{id_img}_{score_type}.sage"
         with open(config_path, 'w+') as fp:
             fp.write(all_data)
 
-        DatabaseController.save_game_in_database(
-            user_login=user_login, id_img=id_img, id_saved_user_by_game=id_saved_user_by_game,
+        return DatabaseController.save_game_in_database(
+            user_login=user_login, id_img=id_img,
             diff=diff, score_type=score_type, config_path=config_path
         )
 
     @staticmethod
     def save_game_triangle(
             user_login: str, position_top_indx: list,
-            position_bottom_indx: list, diff: str, score_value: int, id_img: int, score_type: str):
+            position_bottom_indx: list, diff: str, score_value: int, id_img: int, score_type: str) -> bool:
         # Create config file and saved it
         all_data = DatabaseController.create_game_triangle_config(
             top_indx_position=position_top_indx, bottom_indx_position=position_bottom_indx,
             score_value=score_value
         )
-
-        id_saved_user_by_game = DatabaseController.take_unique_id(list(ID_SAVED_USER_BY_GAMES_TO_PARAMS.keys()))
-        config_path = f"{PATH_SAVED_GAMES_DATA}/{id_saved_user_by_game}.sage"
+        config_path = f"{PATH_SAVED_GAMES_DATA}/{user_login}_{diff}_{id_img}_{score_type}.sage"
         with open(config_path, 'w+') as fp:
             fp.write(all_data)
-        DatabaseController.save_game_in_database(
-            user_login=user_login, id_img=id_img, id_saved_user_by_game=id_saved_user_by_game,
+
+        return DatabaseController.save_game_in_database(
+            user_login=user_login, id_img=id_img,
             diff=diff, score_type=score_type, config_path=config_path
         )
 
     @staticmethod
     def save_game_lenta_rectangle(
             user_login: str, position_frame_indx: list, position_lenta_indx: list,
-            diff: str, score_value: int, id_img: int, score_type: str):
+            diff: str, score_value: int, id_img: int, score_type: str) -> bool:
         # Create config file and saved it
         all_data = DatabaseController.create_game_lenta_rectangle_config(
             indx_position_frame=position_frame_indx, indx_position_scroll=position_lenta_indx,
             score_value=score_value
         )
-
-        id_saved_user_by_game = DatabaseController.take_unique_id(list(ID_SAVED_USER_BY_GAMES_TO_PARAMS.keys()))
-        config_path = f"{PATH_SAVED_GAMES_DATA}/{id_saved_user_by_game}.sage"
+        config_path = f"{PATH_SAVED_GAMES_DATA}/{user_login}_{diff}_{id_img}_{score_type}.sage"
         with open(config_path, 'w+') as fp:
             fp.write(all_data)
-        DatabaseController.save_game_in_database(
-            user_login=user_login, id_img=id_img, id_saved_user_by_game=id_saved_user_by_game,
+
+        return DatabaseController.save_game_in_database(
+            user_login=user_login, id_img=id_img,
             diff=diff, score_type=score_type, config_path=config_path
         )
 
@@ -383,138 +472,178 @@ class DatabaseController:
     def save_game_lenta_triangle(
             user_login: str, position_frame_top_indx: list, position_frame_bottom_indx: list,
             position_lenta_top_indx: list, position_lenta_bottom_indx: list,
-            diff: str, score_value: int, id_img: int, score_type: str):
+            diff: str, score_value: int, id_img: int, score_type: str) -> bool:
         # Create config file and saved it
         all_data = DatabaseController.create_game_lenta_triangle_config(
             indx_position_top_frame=position_frame_top_indx, indx_position_bottom_frame=position_frame_bottom_indx,
             indx_position_top_scroll=position_lenta_top_indx, indx_position_bottom_scroll=position_lenta_bottom_indx,
             score_value=score_value
         )
-
-        id_saved_user_by_game = DatabaseController.take_unique_id(list(ID_SAVED_USER_BY_GAMES_TO_PARAMS.keys()))
-        config_path = f"{PATH_SAVED_GAMES_DATA}/{id_saved_user_by_game}.sage"
+        config_path = f"{PATH_SAVED_GAMES_DATA}/{user_login}_{diff}_{id_img}_{score_type}.sage"
         with open(config_path, 'w+') as fp:
             fp.write(all_data)
-        DatabaseController.save_game_in_database(
-            user_login=user_login, id_img=id_img, id_saved_user_by_game=id_saved_user_by_game,
+
+        return DatabaseController.save_game_in_database(
+            user_login=user_login, id_img=id_img,
             diff=diff, score_type=score_type, config_path=config_path
         )
 
     @staticmethod
     def save_game_in_database(
-            user_login: str, id_saved_user_by_game: int, id_img: int,
-            config_path: str, diff: str, score_type: str):
-        global ID_SAVED_USER_BY_GAMES_TO_PARAMS, ID_GAME_TO_PARAMS
-
-        ID_SAVED_USER_BY_GAMES_TO_PARAMS.update(
-            {
-                f"{id_saved_user_by_game}": {
-                    "login": user_login,
-                    "diff": diff,
-                    "score_type": score_type,
-                    'id_img': id_img,
-                    'config_path': config_path
-                }
-            }
+            user_login: str, id_img: int,
+            config_path: str, diff: str, score_type: str) -> bool:
+        global session
+        saved_game = SavedGame(
+            login=user_login, id_img=id_img,
+            diff=diff, config_path=config_path,
+            score_type=score_type
         )
+        try:
+            # We must rewrite saved game with same params
+            saved_double_game: SavedGame = session.query(SavedGame).filter_by(
+                login=user_login, id_img=id_img, diff=diff, score_type=score_type
+            ).first()
 
-        with open(f"{FOLDER_PATH}/test/saved_user_by_games.json", 'w') as fp:
-            json.dump(ID_SAVED_USER_BY_GAMES_TO_PARAMS, fp)
+            if saved_double_game is not None:
+                DatabaseController.delete_saved_game(saved_double_game.id, delete_file=False)
+
+            session.add(saved_game)
+            session.commit()
+        except Exception:
+            traceback.print_exc()
+            return False
+
+        return True
+
+    @staticmethod
+    def delete_saved_game(saved_game_id: int, delete_file=True) -> bool:
+        global session
+        try:
+            founded_saved_game: SavedGame = session.query(SavedGame).filter_by(id=int(saved_game_id)).first()
+            if delete_file:
+                os.remove(founded_saved_game.config_path)
+            session.query(SavedGame).filter_by(id=int(saved_game_id)).delete()
+            session.commit()
+        except Exception:
+            traceback.print_exc()
+            return False # Something goes wrong
+        return True
 
     @staticmethod
     def get_saved_game(saved_game_id: int) -> str:
-        for k in ID_SAVED_USER_BY_GAMES_TO_PARAMS.keys():
-            if int(k) == int(saved_game_id):
-                return ID_SAVED_USER_BY_GAMES_TO_PARAMS[k]['config_path']
-
+        global session
+        try:
+            founded_saved_game: SavedGame = session.query(SavedGame).filter_by(id=int(saved_game_id)).first()
+            return founded_saved_game.config_path
+        except Exception:
+            traceback.print_exc()
+            return None # Something goes wrong
         return None
 
     @staticmethod
     def get_all_saved_games_by_user(user_login: str) -> List[dict]:
+        global session
+        try:
+            founded_saved_game: List[SavedGame] = session.query(SavedGame).filter_by(login=user_login).all()
+        except Exception:
+            traceback.print_exc()
+            return None # Something goes wrong
         saved_games_info = []
-        for k, v in ID_SAVED_USER_BY_GAMES_TO_PARAMS.items():
-            if v['login'] == user_login:
+        for saved_game_s in founded_saved_game:
+            if saved_game_s.login == user_login:
                 saved_games_info.append(
                     {
-                        "id_img": v['id_img'],
-                        'diff': v['diff'],
-                        'score_type': v['score_type'],
-                        "saved_game_id": k
+                        "id_img": saved_game_s.id_img,
+                        'diff': saved_game_s.diff,
+                        'score_type': saved_game_s.score_type,
+                        "saved_game_id": saved_game_s.id
                     }
                 )
 
         return saved_games_info
 
     @staticmethod
-    def remove_saved_game_by_user(saved_game_id: int):
-        global ID_SAVED_USER_BY_GAMES_TO_PARAMS
-        game_found = ID_SAVED_USER_BY_GAMES_TO_PARAMS.get(str(saved_game_id))
-        if game_found is not None:
-            del ID_SAVED_USER_BY_GAMES_TO_PARAMS[str(saved_game_id)]
-            # Delete saved file
-            os.remove(f'{PATH_SAVED_GAMES_DATA}/{saved_game_id}.sage')
+    def remove_saved_game_by_user(saved_game_id: int) -> bool:
+        global session
+        try:
+            saved_game: SavedGame = session.query(SavedGame).filter_by(id=int(saved_game_id)).first()
+            os.remove(saved_game.config_path)
+            session.query(SavedGame).filter_by(id=int(saved_game_id)).delete()
+            session.commit()
+        except Exception:
+            traceback.print_exc()
+            return False
+
+        return True
 
     @staticmethod
-    def add_record(user_login: str, diff: str, score_value: int, score_type: str):
-        global ID_RECORD_BY_PARAMS
+    def add_record(user_login: str, diff: str, score_value: int, score_type: str) -> bool:
+        global session
 
-        all_records = DatabaseController.get_all_records(score_type)
+        all_records: List[Record] = DatabaseController.get_all_records(score_type)
+
+        if all_records is None:
+            return False
+
         if len(all_records) == DatabaseController.NUM_MAX_RECORDS:
-            is_bigger = False
-            for elem in all_records:
-                if elem['score_value'] < score_value:
-                    is_bigger = True
-                    break
+            if all_records[0].score_value < score_value:
+                # We must delete first record and append new one
+                DatabaseController.delete_record(all_records[0].id)
+                # Append new one
+                try:
+                    new_record = Record(
+                        login=user_login, diff=diff,
+                        score_value=score_value, score_type=score_type
+                    )
+                    session.add(new_record)
+                    session.commit()
+                except Exception:
+                    traceback.print_exc()
+                    return False # Something goes wrong
 
-            if is_bigger:
-                # Delete lower
-                DatabaseController.delete_record(all_records[0]['score_id'])
-            else:
-                # Otherwise - all other record has much more scores
-                return
-
-        id_record = DatabaseController.take_unique_id(list(ID_RECORD_BY_PARAMS.keys()))
-
-        ID_RECORD_BY_PARAMS.update(
-            {
-                f"{id_record}":{
-                    "user_login": user_login,
-                    "diff": diff,
-                    "score_value": score_value,
-                    "score_type": score_type,
-                }
-            }
-        )
-
-        with open(f'{FOLDER_PATH}/test/saved_records.json', 'w') as fp:
-            json.dump(ID_RECORD_BY_PARAMS, fp)
+        return True
 
     @staticmethod
-    def get_all_records(score_type: str):
-        global ID_RECORD_BY_PARAMS
-        records_data_dict = []
-        for k, v in ID_RECORD_BY_PARAMS.items():
-            if v['score_type'] == score_type:
-                records_data_dict.append({
-                    "user_login": v["user_login"],
-                    "diff": v["diff"],
-                    "score_value": v["score_value"],
-                    "score_id": int(k)
-                })
-        # From lower to bigger
-        records_data_dict = sorted(records_data_dict, key=lambda x: x['score_value'])
-        return records_data_dict
+    def get_all_records(score_type: str) -> List[Record]:
+        global session
+        try:
+            all_records: List[Record] = session.query(Record).filter_by(
+                score_type=score_type
+            ).order_by(Record.score_value.desc())
+        except Exception:
+            traceback.print_exc()
+            return None
+        return all_records
 
     @staticmethod
     def delete_record(id_record: int):
-        global ID_RECORD_BY_PARAMS
-        taken = ID_RECORD_BY_PARAMS.get(str(id_record))
-        if taken is not None:
-            del ID_RECORD_BY_PARAMS[str(id_record)]
+        global session
+        try:
+            session.query(Record).filter_by(id=int(id_record)).delete()
+            session.commit()
+        except Exception:
+            traceback.print_exc()
+            return False # Something goes wrong
 
     @staticmethod
-    def update_diff(diff: str, frag_h: int, frag_v: int, type_build: str, type_puzzle: str):
-        pass
+    def update_diff(diff: str, frag_h: int, frag_v: int, type_build: str, type_puzzle: str) -> bool:
+        global session
+        try:
+            # Delete old config
+            old_diff = session.query(DifficultyParams).filter_by(diff=diff).first()
+            session.delete(old_diff)
+            # Append new one
+            new_diff_params = DifficultyParams(
+                diff=diff, frag_h=frag_h, frag_v=frag_v,
+                type_build=type_build, type_puzzle=type_puzzle
+            )
+            session.add(new_diff_params)
+            session.commit()
+        except Exception:
+            traceback.print_exc()
+            return False # Something goes wrong
+
+        return True
 
     @staticmethod
     def get_diff_params(diff: str) -> Tuple[int, int, str, str]:
@@ -537,13 +666,31 @@ class DatabaseController:
             type_puzzle
 
         """
-        return DIFF2PARAMS[diff]
+        global session
+        try:
+            diff_params: DifficultyParams = session.query(DifficultyParams).filter_by(diff=diff).first()
+            # If we do not found our setup - define default params
+            if diff_params is None:
+                # Reset params
+                DatabaseController.define_default_diff_params()
+            # Take it again
+            diff_params: DifficultyParams = session.query(DifficultyParams).filter_by(diff=diff).first()
+        except Exception:
+            traceback.print_exc()
+            return None, None, None, None # Something goes wrong
+        return diff_params.frag_h, diff_params.frag_v, diff_params.type_build, diff_params.type_puzzle
 
     @staticmethod
-    def take_unique_id(id_copies: list):
-        id_save = random.randint(0, 1_000_000)
-        all_ids_set = set(list(map(int, id_copies)))
-        while id_save in all_ids_set:
-            id_save = random.randint(0, 1_000_000)
-        return id_save
+    def define_default_diff_params():
+        global session
+        for diff in DIFFIC_LIST:
+            diff_params: DifficultyParams = session.query(DifficultyParams).filter_by(diff=diff).first()
+            if diff_params is None:
+                # Add param
+                diff_params = DifficultyParams(
+                    diff=diff, frag_h=NUM_FRAGMENTS[0], frag_v=NUM_FRAGMENTS[0],
+                    type_build=TYPE_BUILD_PUZZLE[0], type_puzzle=TYPE_PUZZLES[0]
+                )
+                session.add(diff_params)
 
+        session.commit()

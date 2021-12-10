@@ -3,6 +3,7 @@ import traceback
 from PySide6.QtWidgets import QWidget, QMessageBox
 
 from puzzle.common.choose_image import QChooseImageWidget
+from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.database import DatabaseController
 from puzzle.common.back_to_menu import BackToMenu
 from puzzle.common.signals import SignalSenderBackToMenu, SignalSenderChooseImage
@@ -21,7 +22,7 @@ class QNewGameWidget(QWidget, BackToMenu):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self._user_login = user_login
-        self._qmess_box = None
+        self._qmess_box: QMessageBox = None
         self.setup_back_to_menu_signal(signal_back_to_menu=signal_back_to_menu)
 
         # Buttons
@@ -45,6 +46,12 @@ class QNewGameWidget(QWidget, BackToMenu):
     def update_choosen_img(self, img_id: str):
         self._choosen_id = img_id
         img_name = DatabaseController.get_img_name(img_id)
+
+        if img_name is None:
+            self._qmess_box = return_qmess_box_connect_db_error()
+            self._qmess_box.show()
+            return
+
         self.ui.choosen_image_lineEdit.setText(img_name)
 
     def clicked_start_game(self):
@@ -57,6 +64,12 @@ class QNewGameWidget(QWidget, BackToMenu):
                 diff=diff, score_type=score_type, user_login=self._user_login,
                 id_img=self._choosen_id
             )
+
+            if self._widget_game is None:
+                self._qmess_box = return_qmess_box_connect_db_error()
+                self._qmess_box.show()
+                return
+
             self._widget_game.show()
         except Exception:
             qmess_box = QMessageBox()
