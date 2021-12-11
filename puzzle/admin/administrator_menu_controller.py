@@ -16,12 +16,16 @@ from puzzle.admin.utils import (SIGNAL_ABOUT_CREATORS_INDX, SIGNAL_GALLERY_INDX,
 
 from puzzle.common.qdynamic_size_stacked_widget import QDynamicSizeStackedWidget
 from puzzle.common.menu_controller_base import MenuControllerBase
+from ..common.resizable_main_window import ResizableMainWindow
+from puzzle.utils import ROLE_ADMIN
+
+from puzzle.global_controllers.menu_controller import MenuController
 
 
 class AdministratorMenuController(MenuControllerBase):
 
-    def __init__(self, signal_change_size: SignalSenderChangeSizeWidget):
-        super().__init__(signal_change_size=signal_change_size)
+    def __init__(self, user_login: str, signal_change_size: SignalSenderChangeSizeWidget):
+        super().__init__(user_login=user_login, signal_change_size=signal_change_size)
         # Variables
         self.__num_to_widget_dict : Dict[str, QWidget] = None
         self.__stacked_widget: QDynamicSizeStackedWidget = None
@@ -67,6 +71,13 @@ class AdministratorMenuController(MenuControllerBase):
         self.setLayout(grid)
 
     def change_page(self, target_page: int):
+        if target_page == -1:
+            # Exit
+            self.close()
+            return
+
         self.__num_to_widget_dict[str(target_page)].update()
         self.__stacked_widget.setCurrentIndex(target_page)
 
+
+MenuController.add_new_menu(AdministratorMenuController, ROLE_ADMIN)

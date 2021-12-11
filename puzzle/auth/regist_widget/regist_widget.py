@@ -25,7 +25,7 @@ class QRegistWidget(QWidget):
         self.setLayout(self.ui.registWidgetGridLayout)
 
         # Additional variables
-        self._qmess_box: QMessageBox = None
+        self.__qmess_box: QMessageBox = None
 
     def back(self):
         self.signal_auth.signal.emit()
@@ -34,9 +34,16 @@ class QRegistWidget(QWidget):
         if self.ui.password_lineEdit.text() == self.ui.confirmPassword_lineEdit.text():
             result = DatabaseController.add_user(self.ui.loginLineEdit.text(), self.ui.password_lineEdit.text())
 
+            if not result:
+                pass # TODO: QMessageBox - Пользователь уже есть в БД
+
             if result is None:
-                self._qmess_box = return_qmess_box_connect_db_error()
-                self._qmess_box.show()
+                self.__qmess_box = return_qmess_box_connect_db_error()
+                self.__qmess_box.show()
                 return
 
-        self.signal_auth.signal.emit()
+            # TODO: QMessageBox - Пользователь успешно зарегистрирован
+            self.signal_auth.signal.emit()
+
+        else:
+            pass # TODO: QMessageBox - Пароли не совпадают

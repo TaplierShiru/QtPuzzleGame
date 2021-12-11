@@ -7,9 +7,7 @@ from puzzle.user.user_menu_controller import UserMenuController
 
 def main():
     app = QApplication(sys.argv)
-    ex = ResizableMainWindow(
-        lambda signal_change_size: UserMenuController(user_login="admin", signal_change_size=signal_change_size)
-    )
+    ex = UserMenuController.init_widget_with_resizable_form(user_login='admin')
 
     sys.exit(app.exec())
 

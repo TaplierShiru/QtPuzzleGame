@@ -2,12 +2,12 @@ import sys
 
 from PySide6.QtWidgets import QApplication
 from puzzle.common.resizable_main_window import ResizableMainWindow
-from puzzle.admin.administrator_menu_controller import AdministratorMenuController
+from puzzle.auth import AuthRegController
 
 
 def main():
     app = QApplication(sys.argv)
-    ex = AdministratorMenuController.init_widget_with_resizable_form(user_login='admin')
+    ex = ResizableMainWindow(AuthRegController, allow_exit_button=True)
 
     sys.exit(app.exec())
 
