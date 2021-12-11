@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QMessageBox
 from .auth import Ui_authWidget
 from ..signal_reg_auth import SignalSenderReg
-from ...common.qmess_boxes import return_qmess_box_connect_db_error
+from ...common.qmess_boxes import return_qmess_box_connect_db_error, return_qmess_box_login_regist_error
 from ...database import DatabaseController
 
 from puzzle.global_controllers.menu_controller import MenuController
@@ -20,8 +20,8 @@ class QAuthWidget(QWidget):
         self.signal_reg = signal_reg
 
         # Buttons
-        self.ui.reg_pushButton.clicked.connect(self.reg)
-        self.ui.login_pushButton.clicked.connect(self.login)
+        self.ui.reg_pushButton.clicked.connect(self.clicked_reg)
+        self.ui.login_pushButton.clicked.connect(self.clicked_login)
 
         # Other settings
         self.setLayout(self.ui.authWidgetGridLayout)
@@ -30,7 +30,7 @@ class QAuthWidget(QWidget):
         self.__qmess_box: QMessageBox = None
         self.__menu_widget = None
 
-    def login(self):
+    def clicked_login(self):
         login = self.ui.login_lineEdit.text()
         password = self.ui.password_lineEdit.text()
         result = DatabaseController.find_user(login, password)
@@ -50,14 +50,15 @@ class QAuthWidget(QWidget):
 
             menu_widget = MenuController.get_widget_by_role(user_login=login, role=role)
             if menu_widget is None:
-                # TODO: QMessageBox - Ошибка создания формы
+                self.__qmess_box = return_qmess_box_login_regist_error("Ошибка входа", "Ошибка создания формы.")
+                self.__qmess_box.show()
                 return
             menu_widget.show()
             self.__menu_widget = menu_widget
 
         else:
-            print('Wrong!!')
-            # TODO: QMessageBox - Неправильный логин/пароль
+            self.__qmess_box = return_qmess_box_login_regist_error("Ошибка входа", "Неправильный логин/пароль.")
+            self.__qmess_box.show()
 
-    def reg(self):
+    def clicked_reg(self):
         self.signal_reg.signal.emit()
