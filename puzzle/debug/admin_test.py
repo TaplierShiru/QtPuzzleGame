@@ -7,7 +7,7 @@ from puzzle.admin.administrator_menu_controller import AdministratorMenuControll
 
 def main():
     app = QApplication(sys.argv)
-    ex = ResizableMainWindow(AdministratorMenuController)
+    ex = AdministratorMenuController.init_widget_with_resizable_form(user_login='admin')
 
     sys.exit(app.exec())
 

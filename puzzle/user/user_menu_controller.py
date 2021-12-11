@@ -15,12 +15,16 @@ from puzzle.user.utils import (SIGNAL_MENU_INDX, SIGNAL_NEW_GAME_INDX, SIGNAL_AB
 
 from puzzle.common.qdynamic_size_stacked_widget import QDynamicSizeStackedWidget
 from puzzle.common.menu_controller_base import MenuControllerBase
+from ..common.resizable_main_window import ResizableMainWindow
+
+from puzzle.global_controllers.menu_controller import MenuController
+from puzzle.utils import ROLE_USER
 
 
 class UserMenuController(MenuControllerBase):
 
     def __init__(self, user_login: str, signal_change_size: SignalSenderChangeSizeWidget):
-        super().__init__(signal_change_size=signal_change_size)
+        super().__init__(user_login=user_login, signal_change_size=signal_change_size)
         # Variables
         self.__num_to_widget_dict : Dict[str, QWidget] = None
         self.__stacked_widget: QDynamicSizeStackedWidget = None
@@ -67,6 +71,12 @@ class UserMenuController(MenuControllerBase):
         self.setLayout(grid)
 
     def change_page(self, target_page: int):
+        if target_page == -1:
+            # Exit
+            self.close()
+            return
+
         self.__num_to_widget_dict[str(target_page)].update()
         self.__stacked_widget.setCurrentIndex(target_page)
 
+MenuController.add_new_menu(UserMenuController, ROLE_USER)

@@ -23,7 +23,7 @@ class QAdminMenuWidget(QWidget):
         self.ui.level_control_pushButton.clicked.connect(self.clicked_setup_level)
         self.ui.create_game_pushButton.clicked.connect(self.clicked_create_game)
         self.ui.about_creators_pushButton.clicked.connect(self.clicked_about_creators)
-        self.ui.exit_pushButton.clicked.connect(lambda: sys.exit(-1))
+        self.ui.exit_pushButton.clicked.connect(self.clicked_exit)
         # Other settings
         self.ui.menu_vlayout.setAlignment(Qt.AlignHCenter)
         self.setLayout(self.ui.menu_vlayout)
@@ -39,4 +39,8 @@ class QAdminMenuWidget(QWidget):
 
     def clicked_create_game(self):
         self.__signal_change_page.signal.emit(SIGNAL_CREATE_GAME_INDX)
+
+    def clicked_exit(self):
+        self.close()
+        self.__signal_change_page.signal.emit(-1)
 

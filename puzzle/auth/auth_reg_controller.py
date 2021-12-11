@@ -12,8 +12,8 @@ from puzzle.common.signals.signal_change_size_form import SignalSenderChangeSize
 
 class AuthRegController(MenuControllerBase):
 
-    def __init__(self, signal_change_size: SignalSenderChangeSizeWidget):
-        super().__init__(signal_change_size=signal_change_size)
+    def __init__(self, signal_change_size: SignalSenderChangeSizeWidget, **kwargs):
+        super().__init__(user_login="", signal_change_size=signal_change_size)
 
         self.signal_auth = SignalSenderAuth()
         self.signal_reg = SignalSenderReg()

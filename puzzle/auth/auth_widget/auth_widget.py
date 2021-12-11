@@ -4,6 +4,9 @@ from ..signal_reg_auth import SignalSenderReg
 from ...common.qmess_boxes import return_qmess_box_connect_db_error
 from ...database import DatabaseController
 
+from puzzle.global_controllers.menu_controller import MenuController
+from puzzle.utils import ROLE_USER, ROLE_ADMIN
+
 
 class QAuthWidget(QWidget):
 
@@ -24,26 +27,37 @@ class QAuthWidget(QWidget):
         self.setLayout(self.ui.authWidgetGridLayout)
 
         # Additional variables
-        self._qmess_box: QMessageBox = None
+        self.__qmess_box: QMessageBox = None
+        self.__menu_widget = None
 
     def login(self):
-        result = DatabaseController.find_user(self.ui.login_lineEdit.text(), self.ui.password_lineEdit.text())
+        login = self.ui.login_lineEdit.text()
+        password = self.ui.password_lineEdit.text()
+        result = DatabaseController.find_user(login, password)
 
         if result is None:
-            self._qmess_box = return_qmess_box_connect_db_error()
-            self._qmess_box.show()
+            self.__qmess_box = return_qmess_box_connect_db_error()
+            self.__qmess_box.show()
             return
 
         if result:
-            print('login in game')
-            role = DatabaseController.get_role_user(self.ui.login_lineEdit.text())
+            role = DatabaseController.get_role_user(login)
 
             if role is None:
-                self._qmess_box = return_qmess_box_connect_db_error()
-                self._qmess_box.show()
+                self.__qmess_box = return_qmess_box_connect_db_error()
+                self.__qmess_box.show()
                 return
+
+            menu_widget = MenuController.get_widget_by_role(user_login=login, role=role)
+            if menu_widget is None:
+                # TODO: QMessageBox - Ошибка создания формы
+                return
+            menu_widget.show()
+            self.__menu_widget = menu_widget
+
         else:
             print('Wrong!!')
+            # TODO: QMessageBox - Неправильный логин/пароль
 
     def reg(self):
         self.signal_reg.signal.emit()

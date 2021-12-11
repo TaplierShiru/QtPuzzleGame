@@ -4,3 +4,5 @@ from .signal_change_page import SignalSenderChangePage
 from .signal_picked import SignalSenderPicked
 from .signal_choose_image import SignalSenderChooseImage
 from .signal_preview import SignalSenderPreview
+from .signal_shutdown import SignalSenderShutDown
+from .signal_change_size_form import SignalSenderChangeSizeWidget
