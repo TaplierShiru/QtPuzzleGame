@@ -69,7 +69,6 @@ class ScrolledRectangleFrame(QFrame):
         self.setLayout(hbox)
 
     def _update_labels(self, source_img: np.ndarray, puzzles_position: list):
-        size = source_img.shape
         puzz_w, puzz_h = FRAME_W // self._size_block_w, FRAME_H // self._size_block_h
 
         peases_list = cut_image_into_rectangles(
@@ -78,7 +77,6 @@ class ScrolledRectangleFrame(QFrame):
             thick_of_border_line=ScrolledRectangleFrame.LINE_THICK,
             resize_to=(puzz_h, puzz_w)
         )
-        counter = 0
         for i in range(len(puzzles_position)):
             qlabel_s = self._labels_list[i]
             self._hbox.addWidget(qlabel_s)
@@ -87,7 +85,6 @@ class ScrolledRectangleFrame(QFrame):
 
     def _delete_element_from_layout(self, indx_origin):
         # Delete zone with indx origin
-        # TODO: fix, rewrite this
         # Delete from layout
         found_indx = -1
         for i, elem in enumerate(self._labels_list):
@@ -105,7 +102,6 @@ class ScrolledRectangleFrame(QFrame):
             del widget
         del item
         del self._labels_list[found_indx]
-        #del self._copy_pixmap[indx_origin]
 
     def _change_part_view(
             self, indx_origin: int, indx_clicked_area: int,
@@ -120,10 +116,7 @@ class ScrolledRectangleFrame(QFrame):
                     elem.setPixmap(pixmap)
                     elem.indx = indx_clicked_area
                     break
-            #self._labels_list[indx_origin].setPixmap(pixmap)
-        #self._update_possition_w_origin(indx_origin, indx_clicked_area)
         self.update()
-        print('Change view on scroll')
 
     def get_game_info(self) -> list:
         indx_position = []
@@ -137,9 +130,6 @@ class ScrolledRectangleFrame(QFrame):
         for i in range(len(self._labels_list)):
             qlabel_s = self._labels_list[i]
             self._hbox.addWidget(qlabel_s)
-            #indx = qlabel_s.indx
-            #pixmap = self._copy_pixmap[indx].copy()
-            #qlabel_s.setPixmap(pixmap)
 
     def update(self) -> None:
         self.update_layout()

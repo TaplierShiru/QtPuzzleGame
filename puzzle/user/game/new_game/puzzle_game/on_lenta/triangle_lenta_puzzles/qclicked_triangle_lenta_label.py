@@ -19,7 +19,6 @@ class QClickedTriangleLentaLabel(QLabel):
     def mousePressEvent(self, ev:PySide6.QtGui.QMouseEvent) -> None:
         if ev.button() == Qt.LeftButton:
             indx_pressed, current_indx = self.indx, self.current_index
-            print(f'Start move with indx={indx_pressed}!')
             self._drag_elem = DragTriangleLentaFrame(
                 right_indx=indx_pressed,
                 current_indx=current_indx,

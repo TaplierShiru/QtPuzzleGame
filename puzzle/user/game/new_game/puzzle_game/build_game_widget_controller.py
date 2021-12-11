@@ -12,8 +12,6 @@ class BuildGameWidgetController:
         frag_h, frag_v, type_build, type_puzzle = DatabaseController.get_diff_params(diff)
         if frag_h is None:
             return None
-
-        print(f"frag_h:{frag_h} frag_v:{frag_v} type_build:{type_build} type_puzzle:{type_puzzle}")
         if type_build == BUILD_AREA:
             if type_puzzle == RECTANGLE_PUZZLES:
                 widget_game = GameOnFieldRectangleWidget(

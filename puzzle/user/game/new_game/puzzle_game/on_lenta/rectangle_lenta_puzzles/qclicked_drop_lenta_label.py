@@ -27,7 +27,6 @@ class QClickedDropLentaLabel(QLabel):
     def mousePressEvent(self, ev:PySide6.QtGui.QMouseEvent) -> None:
         if ev.button() == Qt.LeftButton:
             indx_pressed, current_indx = self.indx, self.current_index
-            print(f'Start move with indx={indx_pressed}!')
             self._drag_elem = DragLentaFrame(
                 right_indx=indx_pressed,
                 current_indx=current_indx,
@@ -43,7 +42,6 @@ class QClickedDropLentaLabel(QLabel):
             self._drag_elem.dragMoveEvent(event)
 
     def dropEvent(self, event:PySide6.QtGui.QDropEvent) -> None:
-        print('READY TO DROP')
         if FROM_SCROLL in event.mimeData().text():
             # Where drop was performed
             pixmap_sended = QPixmap(event.mimeData().imageData())
@@ -56,7 +54,6 @@ class QClickedDropLentaLabel(QLabel):
             pixmap_current = self.pixmap().copy()
             self.setPixmap(pixmap_sended)
             if self.current_index == -1:
-                print('empty')
                 indx_current = -1 # Mark as empty
             self.current_index = indx_clicked_origin
             self.signal_sender_on_scroll.signal.emit(indx_clicked_origin, indx_current, pixmap_current)

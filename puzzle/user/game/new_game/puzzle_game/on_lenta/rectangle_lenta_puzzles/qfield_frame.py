@@ -86,7 +86,6 @@ class CustomOnLentaRectangleFrame(QFrame):
         self.update()
 
     def _update_labels(self, source_img: np.ndarray, puzzles_position: list):
-        size = source_img.shape
         peases_list = cut_image_into_rectangles(
             source_img=source_img,
             size_block_w=self._size_block_w, size_block_h=self._size_block_h,
@@ -120,14 +119,4 @@ class CustomOnLentaRectangleFrame(QFrame):
                     bad_placed += 1
                 counter += 1
         return counter, bad_placed
-
-    def _game_status(self):
-        game_status = self._check_status_game()
-        if game_status:
-            print('all good! Game over...')
-        else:
-            print("Somewhere wrong peases lias!")
-
-    def _check_status_game(self) -> bool:
-        pass
 

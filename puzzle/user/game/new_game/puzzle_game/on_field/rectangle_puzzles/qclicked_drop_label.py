@@ -22,7 +22,6 @@ class QClickedDropLabel(QLabel):
     def mousePressEvent(self, ev:PySide6.QtGui.QMouseEvent) -> None:
         if ev.button() == Qt.LeftButton:
             indx_pressed, current_indx = self.indx, self.current_index
-            print(f'Start move with indx={indx_pressed}!')
             self._drag_elem = DragFrame(
                 right_indx=indx_pressed,
                 current_indx=current_indx,
@@ -38,7 +37,6 @@ class QClickedDropLabel(QLabel):
             self._drag_elem.dragMoveEvent(event)
 
     def dropEvent(self, event:PySide6.QtGui.QDropEvent) -> None:
-        print('READY TO DROP')
         # Where drop was performed
         indx_origin, indx_current = self.indx, self.current_index
         # Take indx which label was clicked first

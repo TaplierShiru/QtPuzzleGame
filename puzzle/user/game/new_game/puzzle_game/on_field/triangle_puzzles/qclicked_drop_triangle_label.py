@@ -52,8 +52,6 @@ class QClickedDropTriangleLabel(QLabel):
     def mousePressEvent(self, ev:PySide6.QtGui.QMouseEvent) -> None:
         if ev.button() == Qt.LeftButton:
             x,y = int(ev.position().x()), int(ev.position().y())
-            print(f"x:{x} y:{y}")
-            print(self.mask[y, x])
             if self.mask[y, x] == 0:
                 pixmap = self.pixmap_top.copy()
                 indx_pressed, current_indx = self.indx_top, self.current_indx_top
@@ -62,7 +60,6 @@ class QClickedDropTriangleLabel(QLabel):
                 pixmap = self.pixmap_bot.copy()
                 indx_pressed, current_indx = self.indx_bot, self.current_indx_bot
                 type_puzzle = BOTTOM_ELEMENT
-            print(f'Start move with indx={indx_pressed}!')
             self._drag_elem = DragTriangleFrame(
                 right_indx=indx_pressed,
                 current_indx=current_indx,
@@ -79,11 +76,8 @@ class QClickedDropTriangleLabel(QLabel):
             self._drag_elem.dragMoveEvent(event)
 
     def dropEvent(self, event: PySide6.QtGui.QDropEvent) -> None:
-        print('READY TO DROP')
         # Where drop was performed
         x, y = int(event.position().x()), int(event.position().y())
-        print(f"x:{x} y:{y}")
-        print(self.mask[y, x])
         if self.mask[y, x] == 0:
             pixmap_current = self.pixmap_top.copy()
             indx_origin, indx_current = self.indx_top, self.current_indx_top

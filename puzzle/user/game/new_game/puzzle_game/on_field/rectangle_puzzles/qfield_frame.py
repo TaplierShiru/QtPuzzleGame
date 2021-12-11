@@ -119,15 +119,3 @@ class OnFieldRectangleFrame(QFrame):
                     bad_placed += 1
                 counter += 1
         return counter, bad_placed
-
-    def _game_status(self):
-        game_status = self._check_status_game()
-        if game_status:
-            print('all good! Game over...')
-        else:
-            print("Somewhere wrong peases lias!")
-
-    def _check_status_game(self) -> bool:
-        pass
-
-

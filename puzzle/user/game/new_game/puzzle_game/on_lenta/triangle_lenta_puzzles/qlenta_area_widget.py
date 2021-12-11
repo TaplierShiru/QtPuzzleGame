@@ -103,14 +103,11 @@ class ScrolledTriangleFrame(QFrame):
         self.setLayout(hbox)
 
     def _update_labels(self, source_img: np.ndarray, added_indxes: list, added_types: list):
-        size = source_img.shape
-        puzz_w, puzz_h = FRAME_W // self._size_block_w, FRAME_H // self._size_block_h
         triangles_top_list, triangles_bottom_list, mask = cut_image_into_triangles(
             source_img=source_img,
             size_block_w=self._size_block_w, size_block_h=self._size_block_h,
             thick_of_border_line=ScrolledTriangleFrame.LINE_THICK
         )
-        counter = 0
         for i in range(len(added_indxes)):
             qlabel_s = self._labels_list[i]
             self._hbox.addWidget(qlabel_s)
@@ -122,7 +119,6 @@ class ScrolledTriangleFrame(QFrame):
 
     def _delete_element_from_layout(self, indx_origin, type_puzzle):
         # Delete zone with indx origin
-        # TODO: fix, rewrite this
         # Delete from layout
         found_indx = -1
         for i, elem in enumerate(self._labels_list):
@@ -140,7 +136,6 @@ class ScrolledTriangleFrame(QFrame):
             del widget
         del item
         del self._labels_list[found_indx]
-        #del self._copy_pixmap[indx_origin]
 
     def _change_part_view(
             self, indx_origin: int, indx_clicked_area: int, type_puzzle: int,
@@ -155,10 +150,7 @@ class ScrolledTriangleFrame(QFrame):
                     elem.setPixmap(pixmap)
                     elem.indx = indx_clicked_area
                     break
-            #self._labels_list[indx_origin].setPixmap(pixmap)
-        #self._update_possition_w_origin(indx_origin, indx_clicked_area)
         self.update()
-        print('Change view on scroll')
 
     def get_game_info(self) -> Tuple[list, list]:
         position_top_indx = []
@@ -175,7 +167,6 @@ class ScrolledTriangleFrame(QFrame):
         return position_top_indx, position_bottom_indx
 
     def update_layout(self):
-        step_w = self._origin_w // self._size_block_w
         for i in range(len(self._labels_list)):
             qlabel_s = self._labels_list[i]
             self._hbox.addWidget(qlabel_s)

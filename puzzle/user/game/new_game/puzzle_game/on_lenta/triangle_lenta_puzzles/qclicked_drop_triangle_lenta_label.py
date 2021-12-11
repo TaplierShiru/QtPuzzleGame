@@ -66,8 +66,6 @@ class QClickedDropTriangleLentaLabel(QLabel):
     def mousePressEvent(self, ev:PySide6.QtGui.QMouseEvent) -> None:
         if ev.button() == Qt.LeftButton:
             x,y = int(ev.position().x()), int(ev.position().y())
-            print(f"x:{x} y:{y}")
-            print(self.mask[y, x])
             if self.mask[y, x] == 0:
                 if self.pixmap_top is None:
                     return
@@ -82,7 +80,6 @@ class QClickedDropTriangleLentaLabel(QLabel):
                 pixmap = self.pixmap_bot.copy()
                 indx_pressed, current_indx = self.indx_bot, self.current_indx_bot
                 type_puzzle = BOTTOM_ELEMENT
-            print(f'Start move with indx={indx_pressed}!')
             self._drag_elem = DragTriangleLentaFrame(
                 right_indx=indx_pressed,
                 current_indx=current_indx,
@@ -99,16 +96,12 @@ class QClickedDropTriangleLentaLabel(QLabel):
             self._drag_elem.dragMoveEvent(event)
 
     def dropEvent(self, event:PySide6.QtGui.QDropEvent) -> None:
-        print('READY TO DROP')
         # Where drop was performed
         x, y = int(event.position().x()), int(event.position().y())
-        print(f"x:{x} y:{y}")
-        print(self.mask[y, x])
         if self.mask[y, x] == 0:
             type_set_to_puzzle = TOP_ELEMENT
         else:
             type_set_to_puzzle = BOTTOM_ELEMENT
-        print(event.mimeData().text())
         if FROM_SCROLL in event.mimeData().text():
             # Element from scroll area
             # We must swap elements
@@ -134,7 +127,6 @@ class QClickedDropTriangleLentaLabel(QLabel):
                 self.current_indx_top = indx_clicked_origin
             else:
                 return  # Deny drop
-            # TODO: Here is maybe some error later...
             self.signal_sender_on_scroll.signal.emit(indx_clicked_origin, indx_current, type_drop_puzzle, send_pixmap)
         else:
             if self.mask[y, x] == 0:
