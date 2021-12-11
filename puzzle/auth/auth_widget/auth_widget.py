@@ -3,10 +3,10 @@ from .auth import Ui_authWidget
 from ..signal_reg_auth import SignalSenderReg
 from ...common.qmess_boxes import return_qmess_box_connect_db_error
 from ...common.qmess_boxes.qmess_box import return_qmess_box
+from ...common.resizable_main_window import ResizableMainWindow
 from ...database import DatabaseController
 
 from puzzle.global_controllers.menu_controller import MenuController
-from puzzle.utils import ROLE_USER, ROLE_ADMIN
 
 
 class QAuthWidget(QWidget):
@@ -29,7 +29,7 @@ class QAuthWidget(QWidget):
 
         # Additional variables
         self.__qmess_box: QMessageBox = None
-        self.__menu_widget = None
+        self.__menu_widget: ResizableMainWindow = None
 
     def clicked_login(self):
         login = self.ui.login_lineEdit.text()
@@ -51,16 +51,20 @@ class QAuthWidget(QWidget):
 
             menu_widget = MenuController.get_widget_by_role(user_login=login, role=role)
             if menu_widget is None:
-                self.__qmess_box = return_qmess_box("Ошибка входа", "Ошибка создания формы.",
-                                                    QMessageBox.Icon.Warning)
+                self.__qmess_box = return_qmess_box(
+                    "Ошибка входа", "Ошибка создания формы.",
+                    QMessageBox.Icon.Warning
+                )
                 self.__qmess_box.show()
                 return
             menu_widget.show()
             self.__menu_widget = menu_widget
 
         else:
-            self.__qmess_box = return_qmess_box("Ошибка входа", "Неправильный логин/пароль.",
-                                                QMessageBox.Icon.Warning)
+            self.__qmess_box = return_qmess_box(
+                "Ошибка входа", "Неправильный логин/пароль.",
+                QMessageBox.Icon.Warning
+            )
             self.__qmess_box.show()
 
     def clicked_reg(self):
