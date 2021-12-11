@@ -1,14 +1,14 @@
 import sys
 
 from PySide6.QtWidgets import QApplication
-from puzzle.common.resizable_main_window import ResizableMainWindow
-from puzzle.admin.administrator_menu_controller import AdministratorMenuController
+from puzzle.global_controllers import MenuController
+from puzzle.utils import ROLE_ADMIN
 
 
 def main():
     app = QApplication(sys.argv)
-    ex = AdministratorMenuController.init_widget_with_resizable_form(user_login='admin')
-
+    ex = MenuController.get_widget_by_role(user_login='admin', role=ROLE_ADMIN)
+    ex.show()
     sys.exit(app.exec())
 
 
