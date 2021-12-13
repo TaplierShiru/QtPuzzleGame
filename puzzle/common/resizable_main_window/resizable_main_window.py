@@ -37,5 +37,5 @@ class ResizableMainWindow(QMainWindow):
     def change_widget(self, w: int, h: int, window_title: str):
         self.setWindowTitle(str(window_title))
         self.resize(w, h)
-        self.center()
+        #self.center()
 

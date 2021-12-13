@@ -150,5 +150,5 @@ class OnFieldTriangleFrame(QFrame):
                 if self._labels_list[i][j].current_indx_bot != counter:
                     bad_placed += 1
 
-                counter += 2
-        return counter, bad_placed
+                counter += 1
+        return self._size_block_h*self._size_block_w, bad_placed

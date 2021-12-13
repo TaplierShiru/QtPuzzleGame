@@ -20,13 +20,13 @@ class Ui_Form(object):
         Form.resize(448, 299)
         self.gridLayoutWidget = QWidget(Form)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(10, 10, 428, 281))
+        self.gridLayoutWidget.setGeometry(QRect(10, 10, 431, 281))
         self.about_creators_gridLayout = QGridLayout(self.gridLayoutWidget)
         self.about_creators_gridLayout.setObjectName(u"about_creators_gridLayout")
         self.about_creators_gridLayout.setContentsMargins(0, 0, 0, 0)
         self.label = QLabel(self.gridLayoutWidget)
         self.label.setObjectName(u"label")
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
@@ -36,17 +36,14 @@ class Ui_Form(object):
 
         self.about_creators_gridLayout.addWidget(self.label, 0, 0, 1, 4)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.about_creators_gridLayout.addItem(self.horizontalSpacer_2, 3, 3, 1, 1)
-
         self.about_creators_label = QLabel(self.gridLayoutWidget)
         self.about_creators_label.setObjectName(u"about_creators_label")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.about_creators_label.sizePolicy().hasHeightForWidth())
         self.about_creators_label.setSizePolicy(sizePolicy1)
+        self.about_creators_label.setAlignment(Qt.AlignCenter)
         self.about_creators_label.setWordWrap(True)
 
         self.about_creators_gridLayout.addWidget(self.about_creators_label, 1, 0, 1, 4)
@@ -66,9 +63,12 @@ class Ui_Form(object):
 
         self.label_2 = QLabel(self.gridLayoutWidget)
         self.label_2.setObjectName(u"label_2")
+        sizePolicy1.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy1)
         self.label_2.setAlignment(Qt.AlignCenter)
+        self.label_2.setWordWrap(True)
 
-        self.about_creators_gridLayout.addWidget(self.label_2, 2, 1, 1, 2)
+        self.about_creators_gridLayout.addWidget(self.label_2, 2, 0, 1, 3)
 
 
         self.retranslateUi(Form)

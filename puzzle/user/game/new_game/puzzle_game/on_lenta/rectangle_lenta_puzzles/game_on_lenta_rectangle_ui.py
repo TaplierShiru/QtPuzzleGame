@@ -17,10 +17,10 @@ class Ui_GameRectangleOnLenta(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(633, 588)
+        Form.resize(600, 588)
         self.gridLayoutWidget_2 = QWidget(Form)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(10, 10, 611, 571))
+        self.gridLayoutWidget_2.setGeometry(QRect(10, 10, 600, 571))
         self.game_gridLayout = QGridLayout(self.gridLayoutWidget_2)
         self.game_gridLayout.setObjectName(u"game_gridLayout")
         self.game_gridLayout.setContentsMargins(0, 0, 0, 0)

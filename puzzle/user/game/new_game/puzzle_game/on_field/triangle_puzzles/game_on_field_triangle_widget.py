@@ -28,6 +28,7 @@ class GameOnFieldTriangleWidget(GameBaseWidget):
         self.ui.look_full_image_pushButton.clicked.connect(super().preview_full_image)
 
         self.setLayout(self.ui.game_gridLayout)
+        self.build_game()
 
     def clicked_save_game(self):
         # Take info from game

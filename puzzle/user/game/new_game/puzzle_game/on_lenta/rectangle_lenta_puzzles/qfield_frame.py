@@ -8,7 +8,7 @@ from skimage import io
 
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.database import DatabaseController
-from puzzle.utils import cut_image_into_rectangles
+from puzzle.utils import cut_image_into_rectangles, get_empty_rectangle
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImage
 
 from .qclicked_drop_lenta_label import QClickedDropLentaLabel
@@ -86,6 +86,10 @@ class CustomOnLentaRectangleFrame(QFrame):
         self.update()
 
     def _update_labels(self, source_img: np.ndarray, puzzles_position: list):
+        size_w, size_h = (
+            source_img.shape[1] // self._size_block_w,
+            source_img.shape[0] // self._size_block_h
+        )
         peases_list = cut_image_into_rectangles(
             source_img=source_img,
             size_block_w=self._size_block_w, size_block_h=self._size_block_h,
@@ -99,7 +103,12 @@ class CustomOnLentaRectangleFrame(QFrame):
                 self._grid.addWidget(qlabel_s, i, j)
                 if puzzles_position[counter] != -1:
                     qimage = peases_list[puzzles_position[counter]]
-                    qlabel_s.setPixmap(QPixmap(qimage))
+                else:
+                    qimage = get_empty_rectangle(
+                        size_w=size_w, size_h=size_h,
+                        thick_of_border_line=CustomOnLentaRectangleFrame.LINE_THICK
+                    )
+                qlabel_s.setPixmap(QPixmap(qimage))
                 self._is_empty.append(True)
                 counter += 1
 
@@ -111,6 +120,8 @@ class CustomOnLentaRectangleFrame(QFrame):
         return indx_position
 
     def get_all_num_and_bad_placeses(self) -> Tuple[int, int]:
+        indx_pos = self.get_game_info()
+        print(indx_pos)
         bad_placed = 0
         counter = 0
         for i in range(self._size_block_h):

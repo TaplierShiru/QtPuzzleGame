@@ -1,12 +1,7 @@
-import copy
 import os
 import traceback
-
-from skimage import io, transform
 import pathlib
 import glob
-import json
-import random
 
 from typing import Tuple, List, Union
 from puzzle.utils import *
@@ -22,11 +17,6 @@ Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
-
-# DEBUG
-#user = User("admin", "admin", ROLE_ADMIN)
-#session.add(user)
-#session.commit()
 
 NEW_LINE = '\n'
 BETWEEN_NUMS = ','
@@ -101,14 +91,34 @@ class DatabaseController:
         return True
 
     @staticmethod
+    def is_img_exist_by_name(image_name: str) -> bool:
+        """
+        Return
+            True - if image with this path does not exist
+            False - if image with this path exist
+            None - error while connect to db
+
+        """
+        global session
+        try:
+            path_img_in_temp = os.path.join(PATH_TEMP_DATA, f'{image_name}.png')
+            result: Image = session.query(Image).filter_by(image_path=path_img_in_temp).first()
+            if result is not None:
+                return False
+
+            return True
+        except Exception:
+            traceback.print_exc()
+            return None
+
+    @staticmethod
     def add_image(path: str, name: str) -> bool:
-        img = io.imread(path)
-        img_resized = transform.resize(img, (FRAME_H, FRAME_W))
         path_new_save = os.path.join(PATH_TEMP_DATA, f'{name}.png')
-        io.imsave(
-            path_new_save,
-            img_resized
-        )
+        result = save_img_in_temp(path, size_w=FRAME_W, size_h=FRAME_H, path_save_to=path_new_save)
+        if not result:
+            # cannot  save or read img
+            return False
+
         image = Image(image_path=path_new_save)
         try:
             session.add(image)
@@ -265,6 +275,16 @@ class DatabaseController:
         all_data = frame_data + NEW_LINE + scroll_data
         all_data += NEW_LINE + str(score_value)
         return all_data
+
+    @staticmethod
+    def get_all_games() -> List[Game]:
+        global session
+        try:
+            game_list: List[Game] = session.query(Game).all()
+            return game_list
+        except Exception:
+            traceback.print_exc()
+            return None # Something goes wrong
 
     @staticmethod
     def get_game_imgs(diff: str) -> list:
@@ -540,6 +560,16 @@ class DatabaseController:
         return None
 
     @staticmethod
+    def get_all_saved_games() -> List[SavedGame]:
+        global session
+        try:
+            founded_saved_game: List[SavedGame] = session.query(SavedGame).all()
+            return founded_saved_game
+        except Exception:
+            traceback.print_exc()
+            return None # Something goes wrong
+
+    @staticmethod
     def get_all_saved_games_by_user(user_login: str) -> List[dict]:
         global session
         try:
@@ -576,7 +606,7 @@ class DatabaseController:
         return True
 
     @staticmethod
-    def add_record(user_login: str, diff: str, score_value: int, score_type: str) -> bool:
+    def add_record_top10(user_login: str, diff: str, score_value: int, score_type: str) -> bool:
         global session
 
         all_records: List[Record] = DatabaseController.get_all_records(score_type)
@@ -589,16 +619,28 @@ class DatabaseController:
                 # We must delete first record and append new one
                 DatabaseController.delete_record(all_records[0].id)
                 # Append new one
-                try:
-                    new_record = Record(
-                        login=user_login, diff=diff,
-                        score_value=score_value, score_type=score_type
-                    )
-                    session.add(new_record)
-                    session.commit()
-                except Exception:
-                    traceback.print_exc()
-                    return False # Something goes wrong
+                return DatabaseController.add_record(
+                    user_login=user_login, diff=diff,
+                    score_type=score_type, score_value=score_value
+                )
+        # If count less than maximum - append current record
+        return DatabaseController.add_record(
+            user_login=user_login, diff=diff,
+            score_type=score_type, score_value=score_value
+        )
+
+    @staticmethod
+    def add_record(user_login: str, diff: str, score_value: int, score_type: str) -> bool:
+        try:
+            new_record = Record(
+                login=user_login, diff=diff,
+                score_value=score_value, score_type=score_type
+            )
+            session.add(new_record)
+            session.commit()
+        except Exception:
+            traceback.print_exc()
+            return False  # Something goes wrong
 
         return True
 
@@ -608,7 +650,7 @@ class DatabaseController:
         try:
             all_records: List[Record] = session.query(Record).filter_by(
                 score_type=score_type
-            ).order_by(Record.score_value.desc())
+            ).order_by(Record.score_value.desc()).all()
         except Exception:
             traceback.print_exc()
             return None
@@ -693,3 +735,55 @@ class DatabaseController:
                 session.add(diff_params)
 
         session.commit()
+
+    @staticmethod
+    def clear_temp():
+        def get_file_name(file: str) -> str:
+            return file.split('/')[-1].split('\\')[-1]
+
+        def remove_list_files(list_files: list):
+            for s_file in list_files:
+                os.remove(s_file)
+
+        need_remove_list = []
+        # Clear games
+        games_list = DatabaseController.get_all_games()
+        if games_list is not None:
+            all_games_in_temp = glob.glob(PATH_GAMES_DATA + '/*.sage')
+            set_games_db = set([
+                get_file_name(game_s.config_path)
+                for game_s in games_list
+            ])
+            for game_s in all_games_in_temp:
+                if get_file_name(game_s) not in set_games_db:
+                    need_remove_list.append(game_s)
+            remove_list_files(need_remove_list)
+        need_remove_list = []
+        # Clear saved games
+        saved_games_list = DatabaseController.get_all_saved_games()
+        if saved_games_list is not None:
+            all_saved_games_in_temp = glob.glob(PATH_SAVED_GAMES_DATA + '/*.sage')
+            set_saved_games_db = set([
+                get_file_name(saved_game_s.config_path)
+                for saved_game_s in saved_games_list
+            ])
+            for saved_game_s in all_saved_games_in_temp:
+                if get_file_name(saved_game_s) not in set_saved_games_db:
+                    need_remove_list.append(saved_game_s)
+            remove_list_files(need_remove_list)
+        need_remove_list = []
+        # Clear images
+        all_imgs_list = DatabaseController.take_all_imgs()
+        if all_imgs_list is not None:
+            all_img_in_temp = glob.glob(PATH_TEMP_DATA + '/*.png')
+            set_img_db = set([
+                get_file_name(img_s.image_path)
+                for img_s in all_imgs_list
+            ])
+            for img_s in all_img_in_temp:
+                if get_file_name(img_s) not in set_img_db:
+                    need_remove_list.append(img_s)
+            remove_list_files(need_remove_list)
+
+# Clear at the start
+DatabaseController.clear_temp()

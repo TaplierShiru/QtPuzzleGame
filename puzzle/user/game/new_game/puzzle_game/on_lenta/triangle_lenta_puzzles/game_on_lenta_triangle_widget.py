@@ -60,7 +60,6 @@ class PuzzleGameOnLentaTriangleWidget(GameBaseWidget):
     def update_score(self):
         max_placed, bad_placed = self._game_frame.get_all_num_and_bad_placeses()
         score_value = super().take_new_score(bad_placed=bad_placed, max_placed=max_placed)
-
         self.ui.score_value_label.setText(str(score_value))
 
     def current_game_state(self) -> bool:

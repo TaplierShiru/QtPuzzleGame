@@ -8,7 +8,7 @@ from skimage import io
 
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.database import DatabaseController
-from puzzle.utils import cut_image_into_triangles
+from puzzle.utils import cut_image_into_triangles, get_empty_triangle
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImageTriangle
 
 from .qclicked_drop_triangle_lenta_label import QClickedDropTriangleLentaLabel
@@ -108,12 +108,16 @@ class OnLentaTriangleFrame(QFrame):
         self.update()
 
     def _update_labels(self, source_img: np.ndarray, puzzles_top_position: list, puzzles_bottom_position: list):
-        size = source_img.shape
+        size_w, size_h = (
+            source_img.shape[1] // self._size_block_w,
+            source_img.shape[0] // self._size_block_h
+        )
         triangles_top_list, triangles_bottom_list, mask = cut_image_into_triangles(
             source_img=source_img,
             size_block_w=self._size_block_w, size_block_h=self._size_block_h,
             thick_of_border_line=OnLentaTriangleFrame.LINE_THICK
         )
+        size = source_img.shape
         step_w = int(size[1] // self._size_block_w)
         step_h = int(size[0] // self._size_block_h)
         self._is_empty = []
@@ -122,6 +126,12 @@ class OnLentaTriangleFrame(QFrame):
             for j in range(self._size_block_w):
                 qlabel_s = self._labels_list[i][j]
                 self._grid.addWidget(qlabel_s, i, j)
+                empty_img = get_empty_triangle(
+                    size_w=size_w, size_h=size_h,
+                    thick_of_border_line=OnLentaTriangleFrame.LINE_THICK
+                )
+                qlabel_s.pixmap_empty = QPixmap(empty_img)
+
                 if puzzles_top_position[counter] != -1:
                     image_top = triangles_top_list[puzzles_top_position[counter]]
                     qlabel_s.pixmap_top = QPixmap.fromImage(image_top)
@@ -157,16 +167,7 @@ class OnLentaTriangleFrame(QFrame):
 
                 if self._labels_list[i][j].current_indx_bot != counter:
                     bad_placed += 1
-                counter += 2
-        return counter, bad_placed
+                counter += 1
+        return self._size_block_h*self._size_block_w, bad_placed
 
-    def _game_status(self):
-        game_status = self._check_status_game()
-        if game_status:
-            print('all good! Game over...')
-        else:
-            print("Somewhere wrong peases lias!")
-
-    def _check_status_game(self) -> bool:
-        pass
 

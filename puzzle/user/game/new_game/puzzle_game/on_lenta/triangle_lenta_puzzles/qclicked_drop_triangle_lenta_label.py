@@ -5,7 +5,7 @@ from PySide6.QtGui import QPixmap, QImage, QPainter
 from PySide6.QtWidgets import QLabel
 
 from puzzle.user.game.new_game.puzzle_game.common.signals import SignalSenderSendDataImageTriangle
-
+from puzzle.utils.image_cutter_tools import get_triangle_img_wo_border
 from .qdrag_triangle_lenta_frame import DragTriangleLentaFrame
 from puzzle.user.game.new_game.puzzle_game.common.constants import (FROM_SCROLL_TOP_ELEMENT, FROM_SCROLL_BOTTOM_ELEMENT, \
                                                                     TOP_ELEMENT, BOTTOM_ELEMENT, FROM_SCROLL)
@@ -18,12 +18,14 @@ class QClickedDropTriangleLentaLabel(QLabel):
             signal_sender_send_data_image: SignalSenderSendDataImageTriangle,
             indx_top: int, indx_bot: int, mask: np.ndarray = None,
             current_indx_top: int = -1, current_indx_bot: int = -1,
-            pixmap_top: QPixmap = None, pixmap_bot: QPixmap = None, **kwargs):
+            pixmap_top: QPixmap = None, pixmap_bot: QPixmap = None,
+            pixmap_empty: QPixmap = None, **kwargs):
         super().__init__(**kwargs)
         self.setAcceptDrops(True)
         self.indx_top = indx_top
         self.indx_bot = indx_bot
         self.mask = mask
+        self.pixmap_empty = pixmap_empty
         self.current_indx_top = current_indx_top
         self.current_indx_bot = current_indx_bot
 
@@ -39,7 +41,7 @@ class QClickedDropTriangleLentaLabel(QLabel):
 
     def combine_pixmap(self):
         if self.pixmap_top is None and self.pixmap_bot is None:
-            self.setPixmap(None)
+            self.setPixmap(self.pixmap_empty)
             return
 
         if self.w is None or self.h is None:
@@ -73,6 +75,7 @@ class QClickedDropTriangleLentaLabel(QLabel):
                 pixmap = self.pixmap_top.copy()
                 indx_pressed, current_indx = self.indx_top, self.current_indx_top
                 type_puzzle = TOP_ELEMENT
+                val = 0
             else:
                 if self.pixmap_bot is None:
                     return
@@ -80,10 +83,13 @@ class QClickedDropTriangleLentaLabel(QLabel):
                 pixmap = self.pixmap_bot.copy()
                 indx_pressed, current_indx = self.indx_bot, self.current_indx_bot
                 type_puzzle = BOTTOM_ELEMENT
+                val = 1
+            pixmap_drag = get_triangle_img_wo_border(self.mask, pixmap, val)
             self._drag_elem = DragTriangleLentaFrame(
                 right_indx=indx_pressed,
                 current_indx=current_indx,
                 pixmap=pixmap,
+                pixmap_drag=pixmap_drag,
                 type=type_puzzle
             )
             self._drag_elem.dragMoveEvent(None)

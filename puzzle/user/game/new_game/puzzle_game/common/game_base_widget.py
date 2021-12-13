@@ -93,7 +93,7 @@ class GameBaseWidget(QWidget):
             return
 
         self.stop_game()
-        result = DatabaseController.add_record(
+        result = DatabaseController.add_record_top10(
             user_login=self._user_login, diff=self._diff,
             score_value=self._current_score, score_type=self._score_type
         )

@@ -120,8 +120,7 @@ class ScrolledRectangleFrame(QFrame):
 
     def get_game_info(self) -> list:
         indx_position = []
-        for i in range(self._size_block_h):
-            for j in range(self._size_block_w):
+        for i in range(len(self._labels_list)):
                 indx_position.append(self._labels_list[i].indx)
         return indx_position
 

@@ -54,6 +54,7 @@ class Ui_CreateGame(object):
 
         self.shuffle_image_label = QLabel(self.gridLayoutWidget)
         self.shuffle_image_label.setObjectName(u"shuffle_image_label")
+        self.shuffle_image_label.setAlignment(Qt.AlignCenter)
 
         self.create_game_gridLayout.addWidget(self.shuffle_image_label, 1, 4, 1, 1)
 
@@ -64,6 +65,7 @@ class Ui_CreateGame(object):
 
         self.source_image_label = QLabel(self.gridLayoutWidget)
         self.source_image_label.setObjectName(u"source_image_label")
+        self.source_image_label.setAlignment(Qt.AlignCenter)
 
         self.create_game_gridLayout.addWidget(self.source_image_label, 1, 1, 1, 1)
 

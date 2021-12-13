@@ -61,7 +61,7 @@ class GameOnFieldRectangleWidget(GameBaseWidget):
     def build_game(self):
         self._game_frame = OnFieldRectangleFrame(
             self._img_path, game_config=self._game_config,
-            size_block_w=self.__size_block_w, size_block_h=self._size_block_h
+            size_block_w=self._size_block_w, size_block_h=self._size_block_h
         )
         self._game_frame.setFixedWidth(FRAME_W)
         self._game_frame.setFixedHeight(FRAME_H)

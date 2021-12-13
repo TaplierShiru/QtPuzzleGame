@@ -11,8 +11,8 @@ from puzzle.global_controllers.menu_controller import MenuController
 
 class QAuthWidget(QWidget):
 
-    SIZE_WINDOW_W = 400
-    SIZE_WINDOW_H = 400
+    SIZE_WINDOW_W = 380
+    SIZE_WINDOW_H = 320
 
     def __init__(self, signal_reg: SignalSenderReg):
         super().__init__()

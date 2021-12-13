@@ -17,7 +17,7 @@ class Ui_GameRectangleOnField(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(633, 482)
+        Form.resize(600, 450)
         sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -25,7 +25,7 @@ class Ui_GameRectangleOnField(object):
         Form.setSizePolicy(sizePolicy)
         self.gridLayoutWidget = QWidget(Form)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(10, 10, 611, 461))
+        self.gridLayoutWidget.setGeometry(QRect(10, 10, 600, 450))
         self.game_gridLayout = QGridLayout(self.gridLayoutWidget)
         self.game_gridLayout.setObjectName(u"game_gridLayout")
         self.game_gridLayout.setContentsMargins(0, 0, 0, 0)

@@ -11,18 +11,23 @@ class DragTriangleLentaFrame(QLabel):
 
     def __init__(
             self, right_indx: int, current_indx: int,
-            pixmap: QPixmap = None, size_scale: tuple = None, type: str = None):
+            pixmap: QPixmap = None, pixmap_drag: QPixmap = None,
+            size_scale: tuple = None, type: str = None):
         super().__init__()
         self._right_indx = right_indx
         self._current_indx = current_indx
         self._type = type
-        self.setup(pixmap, size_scale)
 
-    def setup(self, pixmap: QPixmap, size_scale):
-        self._original_pixmap = pixmap.copy()
+        if pixmap_drag is None:
+            pixmap_drag = pixmap
+
+        self.setup(pixmap, pixmap_drag, size_scale)
+
+    def setup(self, pixmap: QPixmap, pixmap_drag: QPixmap, size_scale):
+        self._original_pixmap = pixmap
         if size_scale is not None:
-            pixmap = pixmap.scaled(size_scale[0], size_scale[1])
-        self.pixmap = pixmap
+            pixmap_drag = pixmap_drag.scaled(size_scale[0], size_scale[1])
+        self.pixmap = pixmap_drag
 
     def dragMoveEvent(self, event: PySide6.QtGui.QDragMoveEvent) -> None:
         mimeData = QMimeData()

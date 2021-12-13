@@ -110,12 +110,14 @@ class ScrolledTriangleFrame(QFrame):
         )
         for i in range(len(added_indxes)):
             qlabel_s = self._labels_list[i]
+            qlabel_s.mask = mask.copy()
             self._hbox.addWidget(qlabel_s)
             if added_types[i] == FROM_SCROLL_TOP_ELEMENT:
                 qimage = triangles_top_list[added_indxes[i]]
             else:
                 qimage = triangles_bottom_list[added_indxes[i]]
-            qlabel_s.setPixmap(QPixmap(qimage))
+            qlabel_s.pixmap_send = QPixmap(qimage)
+            qlabel_s.update()
 
     def _delete_element_from_layout(self, indx_origin, type_puzzle):
         # Delete zone with indx origin
@@ -147,8 +149,9 @@ class ScrolledTriangleFrame(QFrame):
         else:
             for elem in self._labels_list:
                 if elem.indx == indx_origin and elem.type_puzzle == type_puzzle:
-                    elem.setPixmap(pixmap)
+                    elem.pixmap_send = QPixmap(pixmap)
                     elem.indx = indx_clicked_area
+                    elem.update()
                     break
         self.update()
 

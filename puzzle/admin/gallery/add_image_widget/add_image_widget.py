@@ -31,6 +31,22 @@ class QAddImageWidget(QWidget):
         name_img = self.ui.name_image_lineEdit.text()
         # Check image
         if check_image_content(path_img):
+            # Check img name
+            result = DatabaseController.is_img_exist_by_name(name_img)
+            if result is None:
+                # Error while connect with db
+                self.__qmess_box = return_qmess_box_connect_db_error()
+                self.__qmess_box.show()
+                return
+
+            if not result:
+                self.__qmess_box = self.__generate_qmess_box(
+                    "Изображение с таким именем уже существует.\nВведите пожалуйста другое имя.",
+                    icon=QMessageBox.Icon.Warning
+                )
+                self.__qmess_box.show()
+                return
+
             # Good img
             result = DatabaseController.add_image(path_img, name_img)
 
