@@ -10,7 +10,9 @@ from puzzle.common.qmess_boxes import return_qmess_box
 
 class GuideController:
 
-    URL = f'{pathlib.Path(__file__).parent.resolve()}/page.html'
+    FOLDER_GUIDE = "guide_data"
+
+    URL = f'{pathlib.Path().resolve()}/{FOLDER_GUIDE}/page.html'
 
     @staticmethod
     def open_webpage() -> bool:

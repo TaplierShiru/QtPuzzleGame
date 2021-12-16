@@ -1,3 +1,8 @@
+# Files for project
+puzzle/temp/
+puzzle/database_puzzle.db
+
+
 # IDE
 .idea
 
