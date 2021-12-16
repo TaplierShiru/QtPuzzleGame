@@ -1,8 +1,8 @@
-from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
+from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error, return_qmess_box
 from puzzle.user.game.new_game.puzzle_game.common.constants import FRAME_H, FRAME_W
 
 from .game_on_field_triangle_ui import Ui_GameTriangleOnField
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QMessageBox
 
 from .qfield_triangle_frame import OnFieldTriangleFrame
 
@@ -25,7 +25,9 @@ class GameOnFieldTriangleWidget(GameBaseWidget):
         self.ui.setupUi(self)
 
         self.ui.save_game_pushButton.clicked.connect(self.clicked_save_game)
+        self.ui.exit_pushButton.clicked.connect(self.clicked_exit)
         self.ui.look_full_image_pushButton.clicked.connect(super().preview_full_image)
+        self.ui.about_system_pushButton.clicked.connect(super().open_guide_page)
 
         self.setLayout(self.ui.game_gridLayout)
         self.build_game()
@@ -46,6 +48,16 @@ class GameOnFieldTriangleWidget(GameBaseWidget):
             self._qmess_box = return_qmess_box_connect_db_error()
             self._qmess_box.show()
             return
+
+        self._qmess_box = return_qmess_box(
+            title="Сохранение игры",
+            text="Игра успешно сохранена.",
+            icon=QMessageBox.Icon.Information
+        )
+        self._qmess_box.show()
+
+    def clicked_exit(self):
+        self.close()
 
     def update_score(self):
         max_placed, bad_placed = self._custom_frame.get_all_num_and_bad_placeses()

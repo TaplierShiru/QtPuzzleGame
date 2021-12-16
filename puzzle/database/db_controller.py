@@ -181,6 +181,12 @@ class DatabaseController:
 
     @staticmethod
     def add_new_game(id_img: int, indx_position: list, diff: str) -> bool:
+
+        # Check id img
+        found_img = DatabaseController.get_img(id_img)
+        if found_img is None:
+            return False # Img is not in DataBase
+
         # Save game in db
         config_path = f"{PATH_GAMES_DATA}/{diff}_{id_img}.sage"
         game = Game(diff=diff, id_img=id_img, config_path=config_path)
@@ -211,7 +217,7 @@ class DatabaseController:
                     score_value=0
                 )
             else:
-                raise ValueError()
+                return False
         elif type_puzzle == RECTANGLE_PUZZLES:
             if type_build == BUILD_AREA:
                 all_data = DatabaseController.create_game_rectangle_config(indx_position, score_value=0)
@@ -221,9 +227,9 @@ class DatabaseController:
                     indx_position_frame, indx_position,
                     score_value=0)
             else:
-                raise ValueError()
+                return False
         else:
-            raise ValueError()
+            return False
 
         with open(config_path, 'w+') as fp:
             fp.write(all_data)
@@ -306,16 +312,13 @@ class DatabaseController:
     def get_game_config(diff: str, id_img: str) -> str:
         global session
         try:
-            game_list: List[Game] = session.query(Game).all()
+            game: Game = session.query(Game).filter_by(diff=diff, id_img=int(id_img)).first()
+            if game is None:
+                return None
+            return game.config_path
         except Exception:
             traceback.print_exc()
             return None # Something goes wrong
-
-        for game_s in game_list:
-            if game_s.diff == diff and game_s.id_img == id_img:
-                return game_s.config_path
-
-        return None
 
     @staticmethod
     def parse_rectangle_config(game_config: str) -> List[int]:

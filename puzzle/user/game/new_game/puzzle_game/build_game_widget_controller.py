@@ -8,6 +8,11 @@ class BuildGameWidgetController:
 
     @staticmethod
     def build_widget(diff: str, score_type: str, user_login: str, id_img: int, saved_game_id: int = None):
+        # Is img can be set with this diff?
+        result_config = DatabaseController.get_game_config(diff, id_img)
+        if result_config is None:
+            return None # I.e. game with this img does not exist
+
         # Create widget game...
         frag_h, frag_v, type_build, type_puzzle = DatabaseController.get_diff_params(diff)
         if frag_h is None:

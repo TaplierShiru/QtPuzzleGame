@@ -53,7 +53,6 @@ class AdministratorMenuController(MenuControllerBase):
         # Init create game, 3
         create_game = QCreateGameWidget(signal_back_to_menu=self.__signal_back_to_menu)
         stacked_widget.addWidget(create_game, fixed_size=QSize(QCreateGameWidget.SIZE_WINDOW_W, QCreateGameWidget.SIZE_WINDOW_H))
-        # Init about system, 4
         # Init about creators, 5
         about_creators = QAboutCreatorsWidget(signal_back_to_menu=self.__signal_back_to_menu)
         stacked_widget.addWidget(about_creators, fixed_size=QSize(QAboutCreatorsWidget.SIZE_WINDOW_W, QAboutCreatorsWidget.SIZE_WINDOW_H))

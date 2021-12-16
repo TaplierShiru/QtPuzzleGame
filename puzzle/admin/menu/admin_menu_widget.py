@@ -1,11 +1,11 @@
-import sys
-
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QMessageBox
 from .admin_menu import Ui_AdminMenu
 from puzzle.common.signals import SignalSenderChangePage
 from puzzle.admin.utils import (SIGNAL_ABOUT_CREATORS_INDX, SIGNAL_GALLERY_INDX, SIGNAL_SETUP_LEVEL_INDX,
                                 SIGNAL_CREATE_GAME_INDX)
+
+from puzzle.guide import GuideController
 
 
 class QAdminMenuWidget(QWidget):
@@ -17,11 +17,13 @@ class QAdminMenuWidget(QWidget):
         super().__init__()
         self.ui = Ui_AdminMenu()
         self.ui.setupUi(self)
+        self.__qmess_box: QMessageBox = None
         self.__signal_change_page = signal_change_page
         # Buttons
         self.ui.gallery_pushButton.clicked.connect(self.clicked_gallery)
         self.ui.level_control_pushButton.clicked.connect(self.clicked_setup_level)
         self.ui.create_game_pushButton.clicked.connect(self.clicked_create_game)
+        self.ui.about_system_pushButton.clicked.connect(self.clicked_open_guide)
         self.ui.about_creators_pushButton.clicked.connect(self.clicked_about_creators)
         self.ui.exit_pushButton.clicked.connect(self.clicked_exit)
         # Other settings
@@ -39,6 +41,14 @@ class QAdminMenuWidget(QWidget):
 
     def clicked_create_game(self):
         self.__signal_change_page.signal.emit(SIGNAL_CREATE_GAME_INDX)
+
+    def clicked_open_guide(self):
+        qmess_box = GuideController.open_webpage_catch_error()
+        if qmess_box is None:
+            return
+
+        qmess_box.show()
+        self.__qmess_box = qmess_box
 
     def clicked_exit(self):
         self.close()

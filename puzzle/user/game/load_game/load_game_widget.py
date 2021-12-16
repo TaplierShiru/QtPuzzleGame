@@ -98,6 +98,7 @@ class QLoadGameWidget(QWidget, BackToMenu):
             )
 
     def signal_cell_selected(self, row: int, column: int):
+        print(self.__selected_row)
         self.__selected_row = row
 
     def clicked_delete_selected(self):
@@ -118,6 +119,7 @@ class QLoadGameWidget(QWidget, BackToMenu):
             self._show_box_game_not_choosen()
 
     def clicked_load_selected(self):
+        print(self.__selected_row)
         if self.__selected_row != -1:
             selected_dict = self.__data_about_game[self.__selected_row]
             diff, score_type, id_img, saved_game_id = (
@@ -148,6 +150,13 @@ class QLoadGameWidget(QWidget, BackToMenu):
         qmes_box.show()
         self.__qmess_box = qmes_box
 
+    def reset_state(self):
+        self.__selected_row = -1
+        self.__qmess_box: QMessageBox = None
+        self.__game_widget = None
+        self.__data_about_game = []
+
     def update(self) -> None:
+        self.reset_state()
         self.update_table_content()
         super().update()

@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox
 from puzzle.common.preview_widget import QPreviewWidget
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.database import DatabaseController
+from puzzle.guide import GuideController
 from .score_calculators import ScoreCalculatorController
 
 
@@ -157,5 +158,14 @@ class GameBaseWidget(QWidget):
         preview_widget.show()
         self._preview_widget = preview_widget
 
+    def open_guide_page(self):
+        qmess_box = GuideController.open_webpage_catch_error()
+        if qmess_box is None:
+            return
+
+        qmess_box.show()
+        self._qmess_box = qmess_box
+
     def closeEvent(self, event:PySide6.QtGui.QCloseEvent) -> None:
-        self.stop_score_timer()
+        self.stop_game()
+

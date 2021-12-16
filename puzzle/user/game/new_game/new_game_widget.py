@@ -80,7 +80,10 @@ class QNewGameWidget(QWidget, BackToMenu):
             )
 
             if self.__widget_game is None:
-                self.__qmess_box = return_qmess_box_connect_db_error()
+                self.__qmess_box = return_qmess_box_connect_db_error(
+                    title='Ошибка подключения к БД или \n' +\
+                          'игра с данным изображенем не существует.'
+                )
                 self.__qmess_box.show()
                 return
 

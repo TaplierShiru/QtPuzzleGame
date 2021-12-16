@@ -13,7 +13,7 @@ from puzzle.database import DatabaseController
 from PIL import Image, ImageQt
 import numpy as np
 
-from ...common.qmess_boxes import return_qmess_box_connect_db_error
+from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error, return_qmess_box
 
 
 class QCreateGameWidget(QWidget, BackToMenu):
@@ -61,15 +61,23 @@ class QCreateGameWidget(QWidget, BackToMenu):
         self._choose_image_widget.show()
 
     def clicked_save_button(self):
-        result = DatabaseController.add_new_game(
-            id_img=self.__id_img, indx_position=self.__shuffle_indx,
-            diff=self.ui.diff_comboBox.currentText()
-        )
+        if self.__id_img is not None:
+            result = DatabaseController.add_new_game(
+                id_img=self.__id_img, indx_position=self.__shuffle_indx,
+                diff=self.ui.diff_comboBox.currentText()
+            )
 
-        if not result:
-            self.__qmess_box = return_qmess_box_connect_db_error()
+            if not result:
+                self.__qmess_box = return_qmess_box_connect_db_error()
+                self.__qmess_box.show()
+                return
+
+            self.__qmess_box = return_qmess_box(
+                title="Игра сохранена",
+                text="Игра успешно сохранена.",
+                icon=QMessageBox.Icon.Information
+            )
             self.__qmess_box.show()
-            return
 
     def clicked_shuffle_button(self):
         if self.__id_img is not None:

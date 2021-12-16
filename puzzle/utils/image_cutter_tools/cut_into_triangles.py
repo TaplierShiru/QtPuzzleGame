@@ -52,23 +52,23 @@ def cut_image_into_triangles(
             peases = (source_img[i * step_h: (i + 1) * step_h,
                                  j * step_w: (j + 1) * step_w]
             ).astype(np.uint8)
-
-            peases_lines = np.zeros_like(peases)
-            peases_lines[:thick_of_border_line, :, 1] = 255  # Top line
-            peases_lines[:, :thick_of_border_line, 1] = 255  # Left line
-            peases_lines[-thick_of_border_line:, :, 1] = 255  # Bottom line
-            peases_lines[:, -thick_of_border_line:, 1] = 255  # Right line
+            h, w, c = peases.shape
+            peases_lines = np.zeros((h, w))
+            peases_lines[:thick_of_border_line, :] = 255  # Top line
+            peases_lines[:, :thick_of_border_line] = 255  # Left line
+            peases_lines[-thick_of_border_line:, :] = 255  # Bottom line
+            peases_lines[:, -thick_of_border_line:] = 255  # Right line
             pil_peases = Image.fromarray(peases_lines.astype(np.uint8))
             draw = ImageDraw.Draw(pil_peases)
             draw.line(
-                (0, 0, peases.shape[1], peases.shape[0]),
-                fill=(0, 255, 0, 0), width=thick_of_border_line
+                (0, 0, w, h),
+                fill=(255), width=thick_of_border_line
             )
             peases_lines = np.array(pil_peases)
-            window_lines = peases_lines[..., 1] == 255
+            window_lines = peases_lines == 255
             # Top pease
             arr_top = np.zeros((peases.shape[0], peases.shape[1], 4), dtype=np.uint8)
-            arr_top[..., :-1] = peases.copy()
+            arr_top[..., :3] = peases.copy()[..., :3] # Skip alpha channel
             arr_top[..., -1] += (1.0 - mask).astype(np.uint8) * 255
             arr_top *= np.expand_dims((1.0 - mask).astype(np.uint8), axis=-1)
             arr_top[..., :-1] *= (1 - np.expand_dims(window_lines, axis=-1)).astype(np.uint8)
@@ -76,12 +76,11 @@ def cut_image_into_triangles(
                     (1 - window_lines) * arr_top[..., 1] +\
                     255 * window_lines
             ).astype(np.uint8)
-            # TODO: How set visiblity to lines...
             arr_top[window_lines, -1] = 255
             arr_top = np.clip(arr_top, 0, 255)
             # Bot pease
             arr_bot = np.zeros((peases.shape[0], peases.shape[1], 4), dtype=np.uint8)
-            arr_bot[..., :-1] = peases.copy()
+            arr_bot[..., :3] = peases.copy()[..., :3] # Skip alpha channel
             arr_bot[..., -1] += mask.astype(np.uint8) * 255
             arr_bot *= np.expand_dims(mask.astype(np.uint8), axis=-1)
             arr_bot[..., :-1] *= (1 - np.expand_dims(window_lines, axis=-1)).astype(np.uint8)
