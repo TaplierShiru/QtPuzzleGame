@@ -3,6 +3,7 @@ import traceback
 from PySide6.QtWidgets import QWidget, QMessageBox
 
 from puzzle.common.choose_image import QChooseImageWidget
+from puzzle.common.error_box_widget import check_img_exist
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from puzzle.database import DatabaseController
 from puzzle.common.back_to_menu import BackToMenu
@@ -68,6 +69,12 @@ class QNewGameWidget(QWidget, BackToMenu):
             qmess_box.setIcon(QMessageBox.Icon.Warning)
             qmess_box.show()
             self.__qmess_box = qmess_box
+            return
+
+        res_box = check_img_exist(self.__choosen_id)
+        if res_box is not None:
+            self.__qmess_box = res_box
+            res_box.show()
             return
 
         diff = self.ui.level_diff_comboBox.currentText()

@@ -2,6 +2,7 @@ from PIL import Image, ImageQt
 from PySide6.QtGui import Qt, QImage, QPixmap
 from PySide6.QtWidgets import QWidget, QTableWidgetItem, QMessageBox, QHeaderView
 
+from puzzle.common.error_box_widget import check_game_exist, check_img_exist
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
 from .load_game import Ui_LoadGame
 from puzzle.database import DatabaseController
@@ -119,7 +120,6 @@ class QLoadGameWidget(QWidget, BackToMenu):
             self._show_box_game_not_choosen()
 
     def clicked_load_selected(self):
-        print(self.__selected_row)
         if self.__selected_row != -1:
             selected_dict = self.__data_about_game[self.__selected_row]
             diff, score_type, id_img, saved_game_id = (
@@ -127,6 +127,21 @@ class QLoadGameWidget(QWidget, BackToMenu):
                 selected_dict['id_img'], selected_dict['saved_game_id']
             )
             user_login = self.__user_login
+
+            result_box = check_game_exist(int(saved_game_id))
+
+            if result_box is not None:
+                result_box.show()
+                self.__qmess_box = result_box
+                return # Error while load
+
+            result_box = check_img_exist(int(id_img))
+
+            if result_box is not None:
+                result_box.show()
+                self.__qmess_box = result_box
+                return # Error while load
+
             game_widget = BuildGameWidgetController.build_widget(
                 diff=diff, score_type=score_type, user_login=user_login,
                 id_img=id_img, saved_game_id=saved_game_id

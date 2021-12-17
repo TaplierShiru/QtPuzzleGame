@@ -22,8 +22,7 @@ class GuideController:
 
         """
         try:
-            QDesktopServices.openUrl(QUrl.fromLocalFile(GuideController.URL))
-            return True
+            return QDesktopServices.openUrl(QUrl.fromLocalFile(GuideController.URL))
         except Exception:
             return False
 

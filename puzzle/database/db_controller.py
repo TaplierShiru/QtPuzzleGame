@@ -31,6 +31,7 @@ FOLDER_PATH = "."
 PATH_TEMP_DATA = f"{FOLDER_PATH}/temp"
 PATH_GAMES_DATA = f"{PATH_TEMP_DATA}/games"
 PATH_SAVED_GAMES_DATA = f'{PATH_TEMP_DATA}/saved_games'
+PATH_DB = f'{FOLDER_PATH}/database_puzzle.db'
 
 os.makedirs(f"{PATH_TEMP_DATA}", exist_ok=True)
 os.makedirs(f"{PATH_GAMES_DATA}", exist_ok=True)
@@ -81,7 +82,8 @@ class DatabaseController:
         global session
         try:
             img: Image = session.query(Image).filter_by(id=int(id_img)).first()
-            os.remove(img.image_path)
+            if os.path.isfile(img.image_path):
+                os.remove(img.image_path)
             session.delete(img)
             session.commit()
         except Exception:
@@ -321,6 +323,18 @@ class DatabaseController:
             return None # Something goes wrong
 
     @staticmethod
+    def delete_game(game_id: int) -> bool:
+        global session
+        try:
+            game: Game = session.query(Game).filter_by(id=int(game_id)).first()
+            session.delete(game)
+            session.commit()
+            return True
+        except Exception:
+            traceback.print_exc()
+            return False # Something goes wrong
+
+    @staticmethod
     def parse_rectangle_config(game_config: str) -> List[int]:
         # Read stored file
         try:
@@ -542,9 +556,9 @@ class DatabaseController:
         global session
         try:
             founded_saved_game: SavedGame = session.query(SavedGame).filter_by(id=int(saved_game_id)).first()
-            if delete_file:
+            if delete_file and os.path.isfile(founded_saved_game.config_path):
                 os.remove(founded_saved_game.config_path)
-            session.query(SavedGame).filter_by(id=int(saved_game_id)).delete()
+            session.delete(founded_saved_game)
             session.commit()
         except Exception:
             traceback.print_exc()
@@ -599,8 +613,9 @@ class DatabaseController:
         global session
         try:
             saved_game: SavedGame = session.query(SavedGame).filter_by(id=int(saved_game_id)).first()
-            os.remove(saved_game.config_path)
-            session.query(SavedGame).filter_by(id=int(saved_game_id)).delete()
+            if os.path.isfile(saved_game.config_path):
+                os.remove(saved_game.config_path)
+            session.delete(saved_game)
             session.commit()
         except Exception:
             traceback.print_exc()
@@ -663,7 +678,8 @@ class DatabaseController:
     def delete_record(id_record: int):
         global session
         try:
-            session.query(Record).filter_by(id=int(id_record)).delete()
+            record = session.query(Record).filter_by(id=int(id_record)).first()
+            session.delete(record)
             session.commit()
         except Exception:
             traceback.print_exc()
@@ -741,14 +757,20 @@ class DatabaseController:
 
     @staticmethod
     def clear_temp():
+
+        if not os.path.isfile(PATH_DB):
+            return
+
         def get_file_name(file: str) -> str:
             return file.split('/')[-1].split('\\')[-1]
 
         def remove_list_files(list_files: list):
             for s_file in list_files:
-                os.remove(s_file)
+                if os.path.isfile(s_file):
+                    os.remove(s_file)
 
         need_remove_list = []
+        need_remove_from_db_list = []
         # Clear games
         games_list = DatabaseController.get_all_games()
         if games_list is not None:
@@ -757,10 +779,20 @@ class DatabaseController:
                 get_file_name(game_s.config_path)
                 for game_s in games_list
             ])
+            dict_games_db = dict([
+                (get_file_name(game_s.config_path), game_s)
+                for game_s in games_list
+            ])
             for game_s in all_games_in_temp:
                 if get_file_name(game_s) not in set_games_db:
                     need_remove_list.append(game_s)
+                else:
+                    del dict_games_db[get_file_name(game_s)]
             remove_list_files(need_remove_list)
+            # Remove remain data from db
+            for game_s in dict_games_db.values():
+                DatabaseController.delete_game(game_s.id)
+
         need_remove_list = []
         # Clear saved games
         saved_games_list = DatabaseController.get_all_saved_games()
@@ -770,10 +802,19 @@ class DatabaseController:
                 get_file_name(saved_game_s.config_path)
                 for saved_game_s in saved_games_list
             ])
+            dict_saved_games_db = dict([
+                (get_file_name(saved_game_s.config_path), saved_game_s)
+                for saved_game_s in saved_games_list
+            ])
             for saved_game_s in all_saved_games_in_temp:
                 if get_file_name(saved_game_s) not in set_saved_games_db:
                     need_remove_list.append(saved_game_s)
+                else:
+                    del dict_saved_games_db[get_file_name(saved_game_s)]
             remove_list_files(need_remove_list)
+            # Remove remain data from db
+            for saved_game_s in dict_saved_games_db.values():
+                DatabaseController.delete_saved_game(saved_game_s.id)
         need_remove_list = []
         # Clear images
         all_imgs_list = DatabaseController.take_all_imgs()
@@ -783,10 +824,19 @@ class DatabaseController:
                 get_file_name(img_s.image_path)
                 for img_s in all_imgs_list
             ])
+            dict_img_db = dict([
+                (get_file_name(img_s.image_path), img_s)
+                for img_s in all_imgs_list
+            ])
             for img_s in all_img_in_temp:
                 if get_file_name(img_s) not in set_img_db:
                     need_remove_list.append(img_s)
+                else:
+                    del dict_img_db[get_file_name(img_s)]
             remove_list_files(need_remove_list)
+            # Remove remain data from db
+            for img_s in dict_img_db.values():
+                DatabaseController.remove_img(img_s.id)
 
 # Clear at the start
 DatabaseController.clear_temp()

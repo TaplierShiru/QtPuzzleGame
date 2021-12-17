@@ -20,4 +20,3 @@ class QLabelPickedAndPreviewImage(QLabelPickedImage):
     def mousePressEvent(self, ev:PySide6.QtGui.QMouseEvent) -> None:
         if ev.button() == Qt.RightButton:
             self.signal_preview.preview.emit(self.indx)
-            print("Show!")

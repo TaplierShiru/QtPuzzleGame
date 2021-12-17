@@ -1,3 +1,5 @@
+import os
+
 from PIL import Image
 
 
@@ -7,6 +9,9 @@ def check_image_content(image_path: str, type_img: str = 'png') -> bool:
 
     """
     try:
+        if os.path.isfile(image_path):
+            return False
+
         img = Image.open(image_path)
         img.verify()
 

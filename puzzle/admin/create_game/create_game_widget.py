@@ -14,6 +14,7 @@ from PIL import Image, ImageQt
 import numpy as np
 
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error, return_qmess_box
+from ...common.error_box_widget import check_img_exist
 
 
 class QCreateGameWidget(QWidget, BackToMenu):
@@ -62,6 +63,10 @@ class QCreateGameWidget(QWidget, BackToMenu):
 
     def clicked_save_button(self):
         if self.__id_img is not None:
+            result = self.check_img_exist()
+            if not result:
+                return
+
             result = DatabaseController.add_new_game(
                 id_img=self.__id_img, indx_position=self.__shuffle_indx,
                 diff=self.ui.diff_comboBox.currentText()
@@ -79,12 +84,28 @@ class QCreateGameWidget(QWidget, BackToMenu):
             )
             self.__qmess_box.show()
 
+    def check_img_exist(self):
+        res_box = check_img_exist(self.__id_img)
+        if res_box is not None:
+            self.__qmess_box = res_box
+            res_box.show()
+            return False
+
+        return True
+
     def clicked_shuffle_button(self):
         if self.__id_img is not None:
+            result = self.check_img_exist()
+            if not result:
+                return
             self._shuffle_image()
             self.update()
 
     def changed_diff(self, indx: int):
+        result = self.check_img_exist()
+        if not result:
+            return
+
         self.ui.diff_comboBox.setCurrentIndex(indx)
 
         if self.__id_img is not None:

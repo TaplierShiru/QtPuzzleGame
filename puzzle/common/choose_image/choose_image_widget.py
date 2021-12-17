@@ -77,7 +77,8 @@ class QChooseImageWidget(QWidget):
 
     def preview_image(self, indx: int):
         img_path = self.pixmap_images_list[indx].path_to_img
-        preview_widget = QPreviewWidget(path_to_image=img_path, image_name='test')
+        img_name = self.pixmap_images_list[indx].img_name
+        preview_widget = QPreviewWidget(path_to_image=img_path, image_name=img_name)
         preview_widget.show()
         self.preview_widget = preview_widget
 
