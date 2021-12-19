@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 from .tables import Base, User, Image, Game, SavedGame, Record, DifficultyParams
 
 
-engine = create_engine(f'sqlite:///database_puzzle.db', echo=True)
+engine = create_engine(f'sqlite:///database_puzzle.db', echo=False)
 
 # Создание таблицы
 Base.metadata.create_all(engine)
