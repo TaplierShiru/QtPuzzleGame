@@ -42,6 +42,7 @@ class QChooseImageWidget(QWidget):
         self.signal_choose_image = signal_choose_image
         self.signal_preview.preview.connect(self.preview_image)
         self.signal_picked.signal.connect(self.choose_image)
+        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
         self.update()
 
     def add_image(self, path_to_img: str, img_id: int, image_name: str):

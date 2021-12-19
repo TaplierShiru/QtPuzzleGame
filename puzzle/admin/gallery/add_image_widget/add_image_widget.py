@@ -1,3 +1,5 @@
+from PySide6.QtCore import QStandardPaths
+from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QWidget, QFileDialog, QMessageBox
 
 from puzzle.common.qmess_boxes import return_qmess_box_connect_db_error
@@ -17,10 +19,11 @@ class QAddImageWidget(QWidget):
         self.ui.save_pushButton.clicked.connect(self.clicked_save)
         self.ui.choose_pushButton.clicked.connect(self.folder_view)
         self.__qmess_box: QMessageBox = None
+        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
 
     def folder_view(self):
         dir = QFileDialog.getOpenFileName(
-            self, "Choose image", "", "Images (*.png)"
+            self, "Choose image", QStandardPaths.writableLocation(QStandardPaths.PicturesLocation), "Images (*.png)"
         )
         if dir is not None and len(dir[0]) != 0:
             self.ui.path_lineEdit.setText(dir[0])

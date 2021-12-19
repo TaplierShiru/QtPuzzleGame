@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QMessageBox
+from PySide6.QtWidgets import QWidget, QMessageBox, QLineEdit
 from .auth import Ui_authWidget
 from ..signal_reg_auth import SignalSenderReg
 from ...common.qmess_boxes import return_qmess_box_connect_db_error
@@ -25,6 +25,7 @@ class QAuthWidget(QWidget):
         self.ui.login_pushButton.clicked.connect(self.clicked_login)
 
         # Other settings
+        self.ui.password_lineEdit.setEchoMode(QLineEdit.Password)
         self.setLayout(self.ui.authWidgetGridLayout)
 
         # Additional variables
@@ -59,6 +60,7 @@ class QAuthWidget(QWidget):
                 return
             menu_widget.show()
             self.__menu_widget = menu_widget
+            self.signal_reg.signal_close.emit()
 
         else:
             self.__qmess_box = return_qmess_box(

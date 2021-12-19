@@ -2,6 +2,7 @@ from abc import abstractmethod
 
 import PySide6
 from PySide6.QtCore import QTimer
+from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QWidget, QMessageBox
 
 from puzzle.common.preview_widget import QPreviewWidget
@@ -57,6 +58,7 @@ class GameBaseWidget(QWidget):
             return
 
         self._game_config = game_config
+        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
 
     def reset_status(self):
         self._time_left = 0
@@ -148,13 +150,14 @@ class GameBaseWidget(QWidget):
 
     def preview_full_image(self):
         img_path = DatabaseController.get_img(self._id_img)
+        img_name = DatabaseController.get_img_name(self._id_img)
 
         if img_path is None:
             self._qmess_box = return_qmess_box_connect_db_error()
             self._qmess_box.show()
             return
 
-        preview_widget = QPreviewWidget(img_path, "test")
+        preview_widget = QPreviewWidget(img_path, img_name)
         preview_widget.show()
         self._preview_widget = preview_widget
 

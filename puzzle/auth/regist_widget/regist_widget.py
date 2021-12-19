@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QMessageBox
+from PySide6.QtWidgets import QWidget, QMessageBox, QLineEdit
 
 from .regist import Ui_registWidget
 from ..signal_reg_auth import SignalSenderAuth
@@ -22,6 +22,8 @@ class QRegistWidget(QWidget):
         self.ui.back_pushButton.clicked.connect(self.clicked_back)
 
         # Other settings
+        self.ui.password_lineEdit.setEchoMode(QLineEdit.Password)
+        self.ui.confirmPassword_lineEdit.setEchoMode(QLineEdit.Password)
         self.setLayout(self.ui.registWidgetGridLayout)
 
         # Additional variables

@@ -26,4 +26,5 @@ class QPreviewWidget(QWidget):
             )
             self.__qmess_box.show()
             DatabaseController.clear_temp()
+        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
 

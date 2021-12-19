@@ -20,6 +20,7 @@ class AuthRegController(MenuControllerBase):
 
         self.signal_auth.signal.connect(self.show_auth)
         self.signal_reg.signal.connect(self.show_reg)
+        self.signal_reg.signal_close.connect(self.close)
 
         self.setupUI(signal_change_size=signal_change_size)
 

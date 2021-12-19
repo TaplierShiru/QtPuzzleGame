@@ -7,3 +7,5 @@ class SignalSenderAuth(QObject):
 
 class SignalSenderReg(QObject):
     signal = Signal()
+    signal_close = Signal()
+

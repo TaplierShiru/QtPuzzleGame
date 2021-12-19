@@ -39,13 +39,16 @@ class QLoadGameWidget(QWidget, BackToMenu):
         self.ui.saved_games_tableWidget.setColumnCount(3)
         self.ui.saved_games_tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         qtwi = QTableWidgetItem("Изображение", QTableWidgetItem.Type)
+        qtwi.setFlags(qtwi.flags() ^ Qt.ItemIsEditable)
         self.ui.saved_games_tableWidget.setHorizontalHeaderItem(0, qtwi)
         self.ui.saved_games_tableWidget.setColumnWidth(0, 150)
 
         qtwi = QTableWidgetItem("Сложность", QTableWidgetItem.Type)
+        qtwi.setFlags(qtwi.flags() ^ Qt.ItemIsEditable)
         self.ui.saved_games_tableWidget.setHorizontalHeaderItem(1, qtwi)
 
         qtwi = QTableWidgetItem("Тип подсчета результатов", QTableWidgetItem.Type)
+        qtwi.setFlags(qtwi.flags() ^ Qt.ItemIsEditable)
         self.ui.saved_games_tableWidget.setHorizontalHeaderItem(2, qtwi)
         self.ui.saved_games_tableWidget.setColumnWidth(2, 200)
 
@@ -85,13 +88,16 @@ class QLoadGameWidget(QWidget, BackToMenu):
             img_item = QTableWidgetItem()
             img_item.setData(Qt.DecorationRole, qpixmap)
             img_item.setTextAlignment(Qt.AlignCenter)
+            img_item.setFlags(img_item.flags() ^ Qt.ItemIsEditable)
 
             self.ui.saved_games_tableWidget.setItem(row_i, 0, img_item)
             diff_item = QTableWidgetItem(single_data['diff'], QTableWidgetItem.Type)
             diff_item.setTextAlignment(Qt.AlignCenter)
+            diff_item.setFlags(diff_item.flags() ^ Qt.ItemIsEditable)
             self.ui.saved_games_tableWidget.setItem(row_i, 1, diff_item)
             score_type = QTableWidgetItem(single_data["score_type"], QTableWidgetItem.Type)
             score_type.setTextAlignment(Qt.AlignCenter)
+            score_type.setFlags(score_type.flags() ^ Qt.ItemIsEditable)
             self.ui.saved_games_tableWidget.setItem(row_i, 2, score_type)
             self.__data_about_game.append(
                 {'id_img': single_data['id_img'], 'diff': single_data['diff'], 'score_type': single_data["score_type"],
