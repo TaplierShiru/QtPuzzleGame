@@ -85,6 +85,12 @@ class PuzzleGameOnLentaTriangleWidget(GameBaseWidget):
     def build_game(self):
         signal_sender_on_scroll = SignalSenderSendDataImageTriangle()
 
+        if self._game_frame is not None:
+            self._game_frame.hide()
+            self.ui.game_gridLayout.removeWidget(self._game_frame)
+            del self._game_frame
+            self._game_frame = None
+
         self._game_frame = OnLentaTriangleFrame(
             self._img_path,
             size_block_w=self._size_block_w, size_block_h=self._size_block_h,
@@ -102,6 +108,12 @@ class PuzzleGameOnLentaTriangleWidget(GameBaseWidget):
         self._game_frame.setSizePolicy(sizePolicy1)
 
         self.ui.game_gridLayout.addWidget(self._game_frame, 2, 0, 1, 6)
+
+        if self._lenta_frame is not None:
+            self._lenta_frame.hide()
+            self.ui.game_gridLayout.removeWidget(self._lenta_frame)
+            del self._lenta_frame
+            self._lenta_frame = None
 
         self._lenta_frame = ScrolledTriangleFrame(
             self._img_path,
@@ -133,3 +145,4 @@ class PuzzleGameOnLentaTriangleWidget(GameBaseWidget):
         self.ui.game_gridLayout.addWidget(scrollArea, 3, 0, 1, 6)
 
         self.start_game()
+        self.update()
