@@ -1,3 +1,5 @@
+import traceback
+
 from PIL import Image, ImageQt
 from PySide6.QtGui import Qt, QImage, QPixmap
 from PySide6.QtWidgets import QWidget, QTableWidgetItem, QMessageBox, QHeaderView
@@ -147,11 +149,21 @@ class QLoadGameWidget(QWidget, BackToMenu):
                 result_box.show()
                 self.__qmess_box = result_box
                 return # Error while load
-
-            game_widget = BuildGameWidgetController.build_widget(
-                diff=diff, score_type=score_type, user_login=user_login,
-                id_img=id_img, saved_game_id=saved_game_id
-            )
+            # Create widget game...
+            try:
+                game_widget = BuildGameWidgetController.build_widget(
+                    diff=diff, score_type=score_type, user_login=user_login,
+                    id_img=id_img, saved_game_id=saved_game_id
+                )
+            except Exception:
+                qmess_box = QMessageBox()
+                qmess_box.setText("Ошибка создания игры. Возможно файл игры поврежден.")
+                qmess_box.setWindowTitle("Ошибка")
+                qmess_box.setIcon(QMessageBox.Icon.Critical)
+                qmess_box.show()
+                self.__qmess_box = qmess_box
+                print(traceback.print_exc())
+                return
 
             if game_widget is None:
                 self.__qmess_box = return_qmess_box_connect_db_error()
