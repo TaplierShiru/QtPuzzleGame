@@ -19,6 +19,7 @@ from ..common.resizable_main_window import ResizableMainWindow
 
 from puzzle.global_controllers.menu_controller import MenuController
 from puzzle.utils import ROLE_USER
+from ..global_controllers.auth_controller import AuthController
 
 
 class UserMenuController(MenuControllerBase):
@@ -72,6 +73,7 @@ class UserMenuController(MenuControllerBase):
 
     def change_page(self, target_page: int):
         if target_page == -1:
+            AuthController.init_auth_widget()
             # Exit
             self.close()
             return

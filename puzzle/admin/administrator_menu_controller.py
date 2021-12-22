@@ -16,10 +16,10 @@ from puzzle.admin.utils import (SIGNAL_ABOUT_CREATORS_INDX, SIGNAL_GALLERY_INDX,
 
 from puzzle.common.qdynamic_size_stacked_widget import QDynamicSizeStackedWidget
 from puzzle.common.menu_controller_base import MenuControllerBase
-from ..common.resizable_main_window import ResizableMainWindow
 from puzzle.utils import ROLE_ADMIN
 
 from puzzle.global_controllers.menu_controller import MenuController
+from ..global_controllers.auth_controller import AuthController
 
 
 class AdministratorMenuController(MenuControllerBase):
@@ -72,6 +72,7 @@ class AdministratorMenuController(MenuControllerBase):
     def change_page(self, target_page: int):
         if target_page == -1:
             # Exit
+            AuthController.init_auth_widget()
             self.close()
             return
 

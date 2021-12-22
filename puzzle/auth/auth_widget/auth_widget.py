@@ -30,7 +30,6 @@ class QAuthWidget(QWidget):
 
         # Additional variables
         self.__qmess_box: QMessageBox = None
-        self.__menu_widget: ResizableMainWindow = None
 
     def clicked_login(self):
         login = self.ui.login_lineEdit.text()
@@ -50,16 +49,15 @@ class QAuthWidget(QWidget):
                 self.__qmess_box.show()
                 return
 
-            menu_widget = MenuController.get_widget_by_role(user_login=login, role=role)
-            if menu_widget is None:
+            try:
+                MenuController.init_menu(user_login=login, role=role)
+            except Exception:
                 self.__qmess_box = return_qmess_box(
-                    "Ошибка входа", "Ошибка создания формы.",
+                    "Ошибка входа", "Ошибка создания формы. Пользователь имеет неизвестную роль. ",
                     QMessageBox.Icon.Warning
                 )
                 self.__qmess_box.show()
                 return
-            menu_widget.show()
-            self.__menu_widget = menu_widget
             self.signal_reg.signal_close.emit()
 
         else:
