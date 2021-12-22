@@ -97,9 +97,9 @@ class QNewGameWidget(QWidget, BackToMenu):
             self.__widget_game.show()
         except Exception:
             qmess_box = QMessageBox()
-            qmess_box.setText("Что-то пошло не так...")
+            qmess_box.setText("Ошибка создания игры. Возможно файл игры поврежден.")
             qmess_box.setWindowTitle("Ошибка")
-            qmess_box.setIcon(QMessageBox.Icon.Warning)
+            qmess_box.setIcon(QMessageBox.Icon.Critical)
             qmess_box.show()
             self.__qmess_box = qmess_box
             print(traceback.print_exc())
