@@ -104,8 +104,6 @@ class QChooseImageWidget(QWidget):
         # Clear pixmap what we want to delete
         self.grid_column = 0
         self.grid_raw = 0
-        # TODO: Load path from DataBase and update it
-        # DEBUG
         self.pixmap_images_list = []
         self.choosen_image_indx = -1
         if self._user_type:
